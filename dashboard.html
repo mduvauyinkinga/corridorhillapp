@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Resident dashboard for Corridor Hill Residence Maintenance System." />
+  <meta name="theme-color" content="#143c5c" />
+  <title>Dashboard | Corridor Hill</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="alternate icon" type="image/jpeg" href="assets/images/corridor-logo.jpeg" />
+  <link rel="apple-touch-icon" href="assets/images/corridor-logo.jpeg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/forms.css" />
+  <link rel="stylesheet" href="css/management.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <div data-nav></div>
+
+  <main class="container dashboard">
+    <!-- No-room state -->
+    <section id="no-room-state" class="dashboard__empty hidden">
+      <h2>Welcome to Corridor Hill!</h2>
+      <p>
+        You haven't chosen a room yet. Choose your room and unit to start
+        submitting maintenance complaints.
+      </p>
+      <a href="choose-room.html" class="btn btn--primary">Choose Room</a>
+    </section>
+
+    <!-- Dashboard content -->
+    <section id="dashboard-state" class="hidden">
+      <div class="dashboard__header">
+        <div class="dashboard__greeting">
+          <h1 id="greeting-name">Hello!</h1>
+          <p id="greeting-sub">Here's your residence overview.</p>
+        </div>
+        <a href="complaint.html" class="btn btn--primary">Quick Submit Complaint</a>
+      </div>
+
+      <div class="room-summary">
+        <div class="room-summary__item">
+          <div class="label">Block</div>
+          <div class="value" id="summary-block">—</div>
+        </div>
+        <div class="room-summary__item">
+          <div class="label">Room Number</div>
+          <div class="value" id="summary-room">—</div>
+        </div>
+        <div class="room-summary__item">
+          <div class="label">Room Letter</div>
+          <div class="value" id="summary-unit">—</div>
+        </div>
+      </div>
+
+      <!-- Complaint statistics -->
+      <h2 class="section-title mb-2">Your Complaint Statistics</h2>
+      <section class="stats" aria-label="Your complaint statistics">
+        <div class="stat-card">
+          <span class="stat-card__label">Total</span>
+          <span class="stat-card__value" id="stat-total">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__label">Active</span>
+          <span class="stat-card__value" id="stat-active">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__label">In Progress</span>
+          <span class="stat-card__value" id="stat-inprogress">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__label">Completed</span>
+          <span class="stat-card__value" id="stat-completed">—</span>
+        </div>
+      </section>
+
+      <!-- Active complaints -->
+      <h2 class="section-title mb-2">Active Complaints</h2>
+      <div id="active-complaints" class="dashboard__list">
+        <div class="dashboard__list-empty">Loading active complaints…</div>
+      </div>
+
+      <!-- Latest maintenance update + notes -->
+      <h2 class="section-title mb-2">Latest Maintenance Update</h2>
+      <div id="latest-notes" class="card">
+        <div class="notes-list__empty">No maintenance updates yet.</div>
+      </div>
+
+      <!-- Complaint history -->
+      <h2 class="section-title mb-2">Complaint History</h2>
+      <div id="complaint-history" class="dashboard__list">
+        <div class="dashboard__list-empty">Loading complaint history…</div>
+      </div>
+
+      <h2 class="section-title mb-3">Quick Actions</h2>
+      <div class="dashboard__actions">
+        <div class="action-card">
+          <div class="action-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="action-card__content">
+            <h3>Submit Complaint</h3>
+            <p>Report a maintenance issue in your room.</p>
+            <a href="complaint.html">Submit now →</a>
+          </div>
+        </div>
+
+        <div class="action-card">
+          <div class="action-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+<div class="action-card__content">
+            <h3>Track Complaints</h3>
+            <p>See the status of your reports.</p>
+            <a href="tracking.html">Track now →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- House Rules -->
+      <h2 class="section-title mb-3">House Rules</h2>
+      <div class="rules-grid">
+        <div class="rule-card">
+          <span class="rule-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18M19 3v18M5 7h14M5 17h14M5 11h2M9 11h2M13 11h2M17 11h2M5 15h2M9 15h2M13 15h2M17 15h2"/></svg>
+          </span>
+          <h3>Keep the fridge clean</h3>
+          <p>Clean and defrost your fridge regularly. Never leave food to spoil.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </span>
+          <h3>Respect quiet hours</h3>
+          <p>Keep noise to a minimum between 22:00 and 06:00 for your neighbours.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18l-1.5 15H4.5L3 3z"/><path d="M8 21h8M12 18v3"/><path d="M7 7h10l-.5 5h-9l-.5-5z"/></svg>
+          </span>
+          <h3>Dispose of waste properly</h3>
+          <p>Use the designated bins and separate recyclables from general waste.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <h3>Secure your room</h3>
+          <p>Always lock your door and keep your key card safe. Report lost keys immediately.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <h3>Energy saving</h3>
+          <p>Switch off lights, heaters and appliances when not in use.</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <h3>Be a good neighbour</h3>
+          <p>Keep shared spaces tidy and treat everyone with respect.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

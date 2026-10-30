@@ -1,0 +1,24 @@
+{
+  "name": "Corridor Hill Residence Maintenance System",
+  "short_name": "Corridor Hill",
+  "description": "Report and track maintenance issues at Corridor Hill Residence.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#143c5c",
+  "icons": [
+    {
+      "src": "assets/images/corridor-logo.jpeg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Submit a maintenance complaint at Corridor Hill Residence." />
+  <meta name="theme-color" content="#143c5c" />
+  <title>Submit Complaint | Corridor Hill</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="alternate icon" type="image/jpeg" href="assets/images/corridor-logo.jpeg" />
+  <link rel="apple-touch-icon" href="assets/images/corridor-logo.jpeg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/forms.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <div data-nav></div>
+
+  <main class="container dashboard">
+<div class="dashboard__header">
+      <div>
+        <h1 class="text-primary">Submit a Complaint</h1>
+        <p class="text-muted">Report one or more maintenance issues in your room.</p>
+      </div>
+    </div>
+
+    <div class="card constrain-sm">
+      <form id="complaint-form" class="form" novalidate>
+        <div id="form-alert" class="form__alert" role="alert" hidden></div>
+
+        <!-- Room / unit preview (auto-loaded) -->
+        <div class="room-summary">
+          <div class="room-summary__item">
+            <div class="label">Block</div>
+            <div class="value" id="complaint-block">—</div>
+          </div>
+          <div class="room-summary__item">
+            <div class="label">Room</div>
+            <div class="value" id="complaint-room">—</div>
+          </div>
+          <div class="room-summary__item">
+            <div class="label">Unit</div>
+            <div class="value" id="complaint-unit">—</div>
+          </div>
+        </div>
+
+<!-- Category select -->
+        <div class="form__group">
+          <label class="form__label" for="category">Category <span class="form__required">*</span></label>
+          <select id="category" name="category" class="form__select" required>
+            <option value="">Select a category…</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Appliances">Appliances</option>
+            <option value="Security">Security</option>
+            <option value="Windows & Doors">Windows &amp; Doors</option>
+            <option value="Cleaning">Cleaning</option>
+            <option value="Other">Other</option>
+          </select>
+          <p class="form__error" data-error="category" role="alert"></p>
+        </div>
+
+        <!-- Issues checklist -->
+        <fieldset class="form__group checkbox-fieldset">
+          <legend class="form__label">Select issue(s) <span class="form__required">*</span></legend>
+          <div id="issues-list" class="checkbox-list">
+            <label><input type="checkbox" name="issues" value="Toilet light" /> <span>Toilet light</span></label>
+            <label><input type="checkbox" name="issues" value="Stove" /> <span>Stove</span></label>
+            <label><input type="checkbox" name="issues" value="Fridge" /> <span>Fridge</span></label>
+            <label><input type="checkbox" name="issues" value="Door" /> <span>Door</span></label>
+            <label><input type="checkbox" name="issues" value="Window" /> <span>Window</span></label>
+            <label><input type="checkbox" name="issues" value="Shower" /> <span>Shower</span></label>
+            <label><input type="checkbox" name="issues" value="Water leak" /> <span>Water leak</span></label>
+            <label><input type="checkbox" name="issues" value="Electrical" /> <span>Electrical</span></label>
+            <label><input type="checkbox" name="issues" value="Other" /> <span>Other</span></label>
+          </div>
+          <p class="form__error" data-error="issues" role="alert"></p>
+        </fieldset>
+
+        <!-- Optional photos -->
+        <div class="form__group">
+          <label class="form__label" for="photos">Photo Attachments</label>
+          <input
+            id="photos"
+            name="photos"
+            class="form__input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+          />
+          <p class="form__hint">
+            You can attach multiple images (JPG, PNG or WEBP). Each image must be 5&nbsp;MB or smaller.
+          </p>
+          <div id="photo-preview" class="photo-preview" aria-live="polite"></div>
+          <div id="upload-progress" class="upload-progress" hidden></div>
+          <p class="form__error" data-error="photos" role="alert"></p>
+        </div>
+
+        <!-- Optional notes -->
+        <div class="form__group">
+          <label class="form__label" for="notes">Additional Notes</label>
+          <textarea
+            class="form__input"
+            id="notes"
+            name="notes"
+            rows="4"
+            placeholder="Provide any extra details about the issue(s)…"
+          ></textarea>
+        </div>
+
+        <div class="form__actions">
+          <button id="submit-complaint-btn" type="submit" class="btn btn--primary btn--block">
+            Submit Complaint
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="js/complaints.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Corridor Maintenance App — deploy hygiene
+# Phase 1: keep local Firebase/service files out of public Pages deploys.
+# NOTE: seed/migrate utilities are still TRACKED and REQUIRED for initial
+# production setup. Do NOT delete them yet. Before the final public
+# resident-facing deploy, either:
+#   (a) move them to a private admin repo/branch, or
+#   (b) `git rm` them listed below, or
+#   (c) deploy Pages from a clean `public/` export that excludes them.
+# This .gitignore only prevents NEW local copies/keys from being committed.
+
+# Local Firebase CLI / emulator artefacts
+.firebase/
+.firestore-indexes-local.json
+firestore-debug.log
+ui-debug.log
+firebase-debug.log
+
+# Node / functions artefacts (functions/ deps are installed at deploy time)
+node_modules/
+functions/node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+# Local env / keys — never commit real secrets here
+.env
+.env.*
+*.key.json
+serviceAccount*.json

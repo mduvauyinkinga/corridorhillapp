@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#143c5c" />
+  <title>Database Seed &amp; Verify Tools | Corridor Hill</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="alternate icon" type="image/jpeg" href="assets/images/corridor-logo.jpeg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/forms.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    .seed-tool {
+      max-width: 720px;
+    }
+    .seed-tool__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: var(--space-3);
+    }
+    .seed-tool__actions .btn {
+      flex: 1 1 auto;
+      min-width: 160px;
+    }
+    .seed-tool__log {
+      margin-top: var(--space-3);
+      padding: var(--space-2);
+      background: #0d1117;
+      color: #e6edf3;
+      border-radius: var(--radius);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 420px;
+      overflow-y: auto;
+      display: none;
+    }
+    .seed-tool__note {
+      margin-top: var(--space-3);
+      padding: var(--space-2);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius);
+      background: #fff8e6;
+      color: #7a5b00;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="auth-page">
+    <div class="auth-card auth-card--wide seed-tool">
+      <div class="auth-card__brand">
+        <div class="auth-logo" aria-hidden="true">
+          <img src="assets/images/corridor-logo.jpeg" alt="" width="72" height="72" />
+        </div>
+        <h1>Database Utilities</h1>
+        <p>Seed and verify the rooms &amp; units collections.</p>
+      </div>
+
+      <div id="form-alert" class="form__alert mb-3" role="alert" hidden></div>
+
+      <div class="seed-tool__note">
+        <strong>⚠️ Management account required.</strong>
+        Sign in as a <strong>management</strong> user before running these
+        actions. Each utility will stop with a clear error if the current
+        user is not authenticated with the <code>management</code> role.
+      </div>
+
+      <div class="seed-tool__actions">
+        <button id="seed-rooms-btn" type="button" class="btn btn--primary">1 · Seed Rooms</button>
+        <button id="seed-units-btn" type="button" class="btn btn--primary">2 · Seed Units</button>
+        <button id="verify-btn" type="button" class="btn btn--secondary">3 · Verify</button>
+      </div>
+
+      <pre id="seed-log" class="seed-tool__log" aria-live="polite"></pre>
+    </div>
+  </main>
+
+  <script type="module">
+    import { $ } from "./js/utils.js";
+
+    const logEl = $("#seed-log");
+
+    function writeLog(lines) {
+      logEl.style.display = "block";
+      logEl.textContent += lines.join("\n") + "\n";
+    }
+
+    function clearLog() {
+      logEl.textContent = "";
+      logEl.style.display = "block";
+    }
+
+    function restore(btn) {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText || btn.textContent;
+    }
+
+    async function run(btn, label, importPath) {
+      btn.dataset.originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Running…";
+      clearLog();
+      writeLog([`▶ ${label}`, "──────────────────────────────"]);
+
+      try {
+        const mod = await import(importPath);
+        // The module runs its own main() on import.
+        // Give it a tick so its console output flushes.
+        await new Promise((r) => setTimeout(r, 400));
+        writeLog(["──────────────────────────────", "✔ Action finished (see console for details)."]);
+      } catch (error) {
+        writeLog(["✗ ERROR:", String(error?.message || error)]);
+      } finally {
+        restore(btn);
+      }
+    }
+
+    $("#seed-rooms-btn").addEventListener("click", () =>
+      run($("#seed-rooms-btn"), "Seed Rooms", "./seed-rooms.js")
+    );
+    $("#seed-units-btn").addEventListener("click", () =>
+      run($("#seed-units-btn"), "Seed Units", "./seed-units.js")
+    );
+    $("#verify-btn").addEventListener("click", () =>
+      run($("#verify-btn"), "Verify Database", "./verify-seed.js")
+    );
+  </script>
+</body>
+</html>
