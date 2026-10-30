@@ -133,7 +133,7 @@ form.addEventListener("submit", async (event) => {
   const category = categoryInput.value;
   if (!category) {
     if (categoryError) {
-      categoryError.textContent = "Please select a category.";
+      categoryError.textContent = "Please select a category to classify your issue.";
       categoryError.hidden = false;
     }
     return;
@@ -150,7 +150,7 @@ form.addEventListener("submit", async (event) => {
 
   if (selectedIssues.length === 0) {
     if (issuesError) {
-      issuesError.textContent = "Please select at least one issue.";
+      issuesError.textContent = "Please select at least one issue affecting your room.";
       issuesError.hidden = false;
     }
     return;

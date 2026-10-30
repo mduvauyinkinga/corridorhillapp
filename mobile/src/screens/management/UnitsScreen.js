@@ -149,7 +149,7 @@ export default function UnitsScreen({ navigation }) {
         label="Search units"
         value={term}
         onChangeText={setTerm}
-        placeholder="Room number, room letter, resident name…"
+        placeholder="Unit number, room letter, resident name…"
         autoCapitalize="none"
       />
       <OptionPicker

@@ -33,12 +33,16 @@ export default function OptionPicker({
   error = "",
   disabled = false,
   modalTitle,
+  // New accessibility prop
+  accessibilityLabel: undefined,
 }) {
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.value === value);
 
+  const pressableA11yLabel = accessibilityLabel || `${label || placeholder}: ${selected ? selected.label : placeholder}`;
+
   return (
-    <View style={styles.group}>
+    <View style={styles.group} accessibilityRole="combobox" aria-label={label || placeholder}>
       {label ? (
         <Text style={styles.label}>
           {label}
@@ -48,7 +52,7 @@ export default function OptionPicker({
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${label || placeholder}: ${selected ? selected.label : placeholder}`}
+        accessibilityLabel={pressableA11yLabel}
         onPress={() => !disabled && setOpen(true)}
         style={[
           styles.control,
@@ -73,6 +77,8 @@ export default function OptionPicker({
         transparent
         animationType="fade"
         onRequestClose={() => setOpen(false)}
+        accessibilityRole="dialog"
+        accessibilityLabel={label || "Select an option"}
       >
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)} />
         <View style={styles.sheet}>

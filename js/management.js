@@ -104,9 +104,9 @@ const residentsGrid = $("#residents-grid");
 const residentsLoading = $("#residents-loading");
 const residentsEmpty = $("#residents-empty");
 
-const occupancyList = $("#occupancy-list");
-const occupancyLoading = $("#occupancy-loading");
-const occupancyEmpty = $("#occupancy-empty");
+
+
+
 
 const unitsGrid = $("#units-grid");
 const unitsEmpty = $("#units-empty");
@@ -132,11 +132,9 @@ let activeUnitRoomId = null;
 
 const tabComplaintsBtn = $("#tab-complaints");
 const tabResidentsBtn = $("#tab-residents");
-const tabOccupancyBtn = $("#tab-occupancy");
 const tabUnitsBtn = $("#tab-units");
 const viewComplaints = $("#view-complaints");
 const viewResidents = $("#view-residents");
-const viewOccupancy = $("#view-occupancy");
 const viewUnits = $("#view-units");
 
 const searchInput = $("#search-input");
@@ -148,7 +146,7 @@ const filterDate = $("#filter-date");
 const sortBy = $("#sort-by");
 
 const residentSearch = $("#resident-search");
-const occupancyBlock = $("#occupancy-block");
+
 
 const modal = $("#complaint-modal");
 const modalDetails = $("#modal-details");
@@ -160,6 +158,11 @@ const modalActual = $("#modal-actual");
 const modalPhotos = $("#modal-photos");
 const modalTimeline = $("#modal-timeline");
 const reopenReview = $("#reopen-review");
+
+const occupancyBlock = $("#occupancy-block");
+const occupancyList = $("#occupancy-list");
+const occupancyEmpty = $("#occupancy-empty");
+const viewOccupancy = $("#view-occupancy");
 const notesList = $("#notes-list");
 const noteForm = $("#note-form");
 const noteInput = $("#note-input");
@@ -1079,7 +1082,7 @@ function openDetailModal(complaintId) {
     ["Student Number", r.studentNumber],
     ["Email", r.email],
     ["Block", r.block],
-    ["Room Number", r.roomNumber],
+    ["Unit Number", r.roomNumber],
     ["Room Letter", r.roomLetter],
     ["Issues", r.issues],
     ["Current Status", r.status],

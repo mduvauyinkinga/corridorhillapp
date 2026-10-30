@@ -17,6 +17,9 @@
 <body>
   <div data-nav></div>
 
+  <!-- Skip to main content link -->
+  <a href="#stats-section" class="skip-link">Skip to main content</a>
+
   <main class="container management">
     <div class="management__header">
       <div>
@@ -73,11 +76,11 @@
       <button id="tab-residents" class="tabs__btn" role="tab" aria-selected="false" type="button">
         Residents
       </button>
-      <button id="tab-occupancy" class="tabs__btn" role="tab" aria-selected="false" type="button">
-        Occupancy
-      </button>
       <button id="tab-units" class="tabs__btn" role="tab" aria-selected="false" type="button">
         Unit Profiles
+      </button>
+      <button id="tab-occupancy" class="tabs__btn" role="tab" aria-selected="false" type="button">
+        Occupancy
       </button>
     </div>
 
@@ -164,7 +167,7 @@
               <th>Resident Name</th>
               <th>Student Number</th>
               <th>Block</th>
-              <th>Room Number</th>
+              <th>Unit Number</th>
               <th>Room Letter</th>
               <th>Issue</th>
               <th>Status</th>
@@ -180,6 +183,7 @@
         </div>
         <div id="complaints-empty" class="table-empty hidden" role="status">
           No complaints match your criteria.
+          <a href="complaint.html" class="btn btn--ghost mt-1">Submit Your First Complaint</a>
         </div>
       </div>
     </section>
@@ -205,13 +209,29 @@
       </div>
       <div id="residents-empty" class="table-empty hidden" role="status">
         No residents have registered yet.
+          <a href="register.html" class="btn btn--ghost mt-1">Add First Resident</a>
       </div>
     </section>
+
+    
 
     <!-- Occupancy view -->
     <section id="view-occupancy" class="hidden" role="tabpanel">
       <div class="toolbar toolbar--simple">
         <div class="toolbar__search">
+          <label class="form__label" for="occupancy-search">Search</label>
+          <input
+            id="occupancy-search"
+            class="form__input"
+            type="search"
+            placeholder="Room, block, resident name…"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="toolbar__filters">
+        <div>
           <label class="form__label" for="occupancy-block">Block</label>
           <select id="occupancy-block" class="form__select">
             <option value="">All blocks</option>
@@ -223,14 +243,29 @@
             <option value="F">Block F</option>
           </select>
         </div>
+        <div>
+          <label class="form__label" for="occupancy-floor">Floor</label>
+          <select id="occupancy-floor" class="form__select">
+            <option value="">All floors</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
       </div>
-      <div id="occupancy-list"></div>
+
+      <div id="occupancy-list" class="occupancy-list"></div>
+
       <div id="occupancy-loading" class="table-loading" role="status">
         <div class="spinner" aria-hidden="true"></div>
         Loading occupancy…
       </div>
+
       <div id="occupancy-empty" class="table-empty hidden" role="status">
-        No occupancy data available.
+        No rooms match your criteria.
+          <a href="choose-room.html" class="btn btn--ghost mt-1">Choose a Room</a>
       </div>
     </section>
 
@@ -243,7 +278,7 @@
             id="unit-search"
             class="form__input"
             type="search"
-            placeholder="Room number, room letter, resident name…"
+            placeholder="Unit number, room letter, resident name…"
             autocomplete="off"
           />
         </div>
@@ -277,6 +312,7 @@
 
       <div id="units-empty" class="table-empty hidden" role="status">
         No units match your criteria.
+          <a href="units.html" class="btn btn--ghost mt-1">Manage Units</a>
       </div>
     </section>
   </main>

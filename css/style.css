@@ -10,7 +10,7 @@
   --color-accent: #e8a33d;       /* warm gold */
   --color-accent-dark: #c9871f;
 
-  /* Neutrals */
+  /* Neutrals - Light mode */
   --color-bg: #f4f6f9;
   --color-surface: #ffffff;
   --color-text: #22303c;
@@ -40,6 +40,24 @@
   /* Typography */
   --font-base: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   --container-max: 1100px;
+}
+
+/* Dark mode - automatically activated via prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  --color-bg: #1a202c;
+  --color-surface: #2d3748;
+  --color-text: #e2e8f0;
+  --color-text-muted: #a0aec0;
+  --color-border: #4a5568;
+}
+
+/* Optional: manually set dark mode via data attribute */
+[data-theme="dark"] {
+  --color-bg: #1a202c;
+  --color-surface: #2d3748;
+  --color-text: #e2e8f0;
+  --color-text-muted: #a0aec0;
+  --color-border: #4a5568;
 }
 
 /* ---------- Reset ---------- */
@@ -150,8 +168,20 @@ button {
   cursor: not-allowed;
 }
 
-/* Accessible keyboard focus indicator for interactive elements. */
-.btn:focus-visible,
+.skiplink {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s ease;
+}
+
+.skiplink:focus {
+  top: 0;
+}
 .navbar__toggle:focus-visible,
 .tabs__btn:focus-visible,
 .status-select:focus-visible {

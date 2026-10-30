@@ -228,8 +228,10 @@ export default function DashboardScreen({ navigation }) {
           <Text style={styles.ruleBody}>{rule.body}</Text>
         </Card>
       ))}
+
+      {loading && <LoadingState message="Loading complaints…" />}
     </ScrollView>
-  );
+  };
 }
 
 const styles = StyleSheet.create({

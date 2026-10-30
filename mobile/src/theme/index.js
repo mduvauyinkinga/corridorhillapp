@@ -21,7 +21,7 @@ export const colors = {
   accent: "#e8a33d",
   accentDark: "#c9871f",
 
-  /* Neutrals */
+  /* Neutrals - Light mode (default) */
   bg: "#f4f6f9",
   surface: "#ffffff",
   text: "#22303c",
@@ -63,6 +63,15 @@ export const colors = {
   /* Occupancy chips (css/management.css .occupancy-chip) */
   occupiedChip: { bg: "#ffe4e6", fg: "#9f1239" },
   availableChip: { bg: "#d1fae5", fg: "#065f46" },
+
+  /* Dark mode overrides - applied when Appearance.getColorScheme() === 'dark' */
+  dark: {
+    bg: "#1a202c",
+    surface: "#2d3748",
+    text: "#e2e8f0",
+    textMuted: "#a0aec0",
+    border: "#4a5568",
+  },
 };
 
 export const spacing = {

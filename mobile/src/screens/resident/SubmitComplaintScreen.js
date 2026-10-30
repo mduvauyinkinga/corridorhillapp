@@ -45,6 +45,7 @@ import { colors, radius, spacing, typography } from "../../theme";
 import { COMPLAINT_CATEGORIES, COMPLAINT_ISSUES } from "../../utils/complaints";
 import { getFirebaseErrorMessage } from "../../utils/errors";
 import { validateComplaint, validateImageAsset } from "../../utils/validation";
+import { fetchRecentIssues } from "../../services/complaintService";
 
 export default function SubmitComplaintScreen({ navigation }) {
   const { profile, uid } = useAuth();
@@ -58,7 +59,10 @@ export default function SubmitComplaintScreen({ navigation }) {
   const [formError, setFormError] = useState("");
   const [progress, setProgress] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isRoomLoading, setIsRoomLoading] = useState(true);
   const [roomPreview, setRoomPreview] = useState({
+  const [recentIssues, setRecentIssues] = useState([]);
+  const [recentIssuesLoading, setRecentIssuesLoading] = useState(false);
     block: null,
     roomNumber: null,
     unitLetter: null,
@@ -72,7 +76,16 @@ export default function SubmitComplaintScreen({ navigation }) {
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      if (!profile?.roomId || !profile?.unitId) return;
+      setIsRoomLoading(true);
+      if (!profile?.roomId || !profile?.unitId) {
+        setRoomPreview({
+          block: null,
+          roomNumber: null,
+          unitLetter: null,
+        });
+        setIsRoomLoading(false);
+        return;
+      }
       try {
         const [room, unit] = await Promise.all([
           fetchRoom(profile.roomId),
@@ -85,6 +98,17 @@ export default function SubmitComplaintScreen({ navigation }) {
           unitLetter: unit?.unitName || "—",
         });
       } catch (error) {
+        console.error("[SubmitComplaintScreen] load room summary error:", error);
+        if (!cancelled) setFormError("Could not load your room details. Please try again.");
+      } finally {
+        setIsRoomLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.roomId, profile?.unitId]); catch (error) {
         console.error("[SubmitComplaintScreen] load room summary error:", error);
         if (!cancelled) setFormError("Could not load your room details. Please try again.");
       }

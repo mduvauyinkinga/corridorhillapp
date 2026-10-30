@@ -95,9 +95,9 @@ export function validateLogin({ email, password }) {
 /** Validate a complaint form: a category plus at least one issue. */
 export function validateComplaint({ category, issues }) {
   const errors = {};
-  if (!isRequired(category)) errors.category = "Please select a category.";
+  if (!isRequired(category)) errors.category = "Please select a category to classify your maintenance issue.";
   if (!Array.isArray(issues) || issues.length === 0) {
-    errors.issues = "Please select at least one issue.";
+    errors.issues = "Please select at least one issue affecting your room.";
   }
   return errors;
 }

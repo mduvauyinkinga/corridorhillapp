@@ -14,10 +14,14 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { colors, radius, spacing, typography } from "../theme";
 import Button from "./Button";
 
-export function LoadingState({ message = "Loading…" }) {
+export function LoadingState({ message = "Loading…", showSkeleton = false }) {
   return (
     <View style={styles.center} accessibilityRole="progressbar" accessibilityLabel={message}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      {showSkeleton ? (
+        <View style={styles.skeleton} />
+      ) : (
+        <ActivityIndicator size="large" color={colors.primary} />
+      )}
       <Text style={styles.loadingText}>{message}</Text>
     </View>
   );
@@ -80,6 +84,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     gap: spacing.md,
+  },
+  skeleton: {
+    width: "100%",
+    height: 20,
+    backgroundColor: colors.border,
+    borderRadius: 4,
+    marginBottom: spacing.xs,
   },
   emptyText: {
     color: colors.textMuted,

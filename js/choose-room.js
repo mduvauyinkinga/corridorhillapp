@@ -2,7 +2,7 @@
  * choose-room.js
  * ------------------------------------------------------------------
  * Guided room selection flow:
- *   Choose Block → Choose Room Number → Choose Room Letter → Confirm.
+ *   Choose Block → Choose Unit Number → Choose Room Letter → Confirm.
  *
  * Data model (unchanged):
  *   rooms/{roomId}  → { block, roomNumber, ... }
@@ -133,7 +133,7 @@ blockSelect.addEventListener("change", () => {
   loadRooms(block);
 });
 
-/* --------------------------- Step 2: Room number ---------------------- */
+/* --------------------------- Step 2: Unit number ---------------------- */
 
 function roomListReset(statusText) {
   roomSelect.innerHTML = '<option value="">Select a room…</option>';
@@ -166,7 +166,7 @@ async function loadRooms(block) {
     });
 
     roomSelect.disabled = false;
-    roomStatus.textContent = "Select your room number.";
+    roomStatus.textContent = "Select your unit number.";
   } catch (error) {
     console.error("[choose-room] loadRooms error:", error);
     roomSelect.disabled = true;
@@ -278,7 +278,7 @@ async function loadUnits(roomId) {
 function updateSelection() {
   if (selectedRoom && selectedUnit) {
     selectionText.textContent =
-      `Block ${selectedBlock} · Room ${selectedRoom.roomNumber} · Room ${selectedUnit.roomLetter || selectedUnit.unitName || "?"}`;
+      `Block ${selectedBlock} · Unit ${selectedRoom.roomNumber} · Room ${selectedUnit.roomLetter || selectedUnit.unitName || "?"}`;
     summary.hidden = false;
     confirmBtn.disabled = false;
     setProgress(4);

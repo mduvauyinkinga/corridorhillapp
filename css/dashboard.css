@@ -247,3 +247,41 @@
   max-width: 420px;
   margin: 0 auto var(--space-3);
 }
+
+/* Skip link - hidden by default, visible when focused */
+.skiplink {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s ease;
+}
+
+.skiplink:focus {
+  top: 0;
+}
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-3);
+}
+
+.stat-card__skeleton {
+  height: 1.2rem;
+  border-radius: var(--radius);
+  background: var(--color-border);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-card__skeleton--two {
+  width: 50%;
+}
+
+.update-card__skeleton {
+  height: 2rem;
+  border-radius: var(--radius);
+  background: var(--color-border);
+  margin-bottom: var(--space-xs);
+}

@@ -53,6 +53,19 @@ export async function fetchResidentComplaints(uid) {
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+/** Extract unique issue values from a resident's complaint history. */
+export async function fetchRecentIssues(uid) {
+  if (!uid) return [];
+  const complaints = await fetchResidentComplaints(uid);
+  const issueSet = new Set();
+  complaints.forEach((c) => {
+    if (Array.isArray(c.issues)) {
+      c.issues.forEach((issue) => issueSet.add(issue));
+    }
+  });
+  return Array.from(issueSet);
+}
+
 /** Every complaint (management bulk read — one query for the whole table). */
 export async function fetchAllComplaints() {
   const snapshot = await getDocs(collection(db, "complaints"));

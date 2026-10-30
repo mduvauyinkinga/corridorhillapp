@@ -297,7 +297,7 @@ export default function ManagementComplaintDetailsScreen({ route }) {
         <KeyValue label="Student Number">{resident?.studentNumber || "—"}</KeyValue>
         <KeyValue label="Email">{resident?.email || "—"}</KeyValue>
         <KeyValue label="Block">{block}</KeyValue>
-        <KeyValue label="Room Number">{roomNumber}</KeyValue>
+        <KeyValue label="Unit Number">{roomNumber}</KeyValue>
         <KeyValue label="Room Letter">{roomLetter}</KeyValue>
         <KeyValue label="Category">{complaint.category || "—"}</KeyValue>
         <KeyValue label="Issues">{issues}</KeyValue>

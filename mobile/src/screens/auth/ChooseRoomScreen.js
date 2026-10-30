@@ -19,8 +19,9 @@
  * choose-room.html to dashboard.html).
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Button from "../../components/Button";
 import { Card, SectionTitle } from "../../components/Layout";
@@ -33,7 +34,7 @@ import { colors, radius, spacing, typography } from "../../theme";
 import { getFirebaseErrorMessage } from "../../utils/errors";
 import { BLOCKS, groupSlotsByLetter } from "../../utils/rooms";
 
-const STEP_LABELS = ["Block", "Room number", "Room", "Confirm"];
+const STEP_LABELS = ["Block", "Unit number", "Room", "Confirm"];
 
 export default function ChooseRoomScreen() {
   const { uid, refreshProfile } = useAuth();
@@ -48,7 +49,27 @@ export default function ChooseRoomScreen() {
   const [error, setError] = useState("");
   const [confirming, setConfirming] = useState(false);
 
+  const [savedRoom, setSavedRoom] = useState(null);
+
   const step = !block ? 1 : !roomId ? 2 : !selectedLetter ? 3 : 4;
+
+  /* Load previously selected room from async storage. */
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem("selectedRoom");
+        if (stored) {
+          const data = JSON.parse(stored);
+          setBlock(data.block || "");
+          setRoomId(data.roomId || "");
+          setSelectedLetter(data.selectedLetter || "");
+          setSavedRoom(data);
+        }
+      } catch (e) {
+        console.warn("[ChooseRoomScreen] failed to load saved room:", e);
+      }
+    })();
+  }, []);
 
   const blockOptions = useMemo(
     () => BLOCKS.map((letter) => ({ value: letter, label: `Block ${letter}` })),
@@ -56,7 +77,7 @@ export default function ChooseRoomScreen() {
   );
 
   const roomOptions = useMemo(
-    () => rooms.map((room) => ({ value: room.id, label: `Room ${room.roomNumber}` })),
+    () => rooms.map((room) => ({ value: room.id, label: `Unit ${room.roomNumber}` })),
     [rooms]
   );
 
@@ -106,6 +127,17 @@ export default function ChooseRoomScreen() {
     if (!room || !unit) {
       setError("Please choose an available room before confirming.");
       return;
+    }
+
+    // Save selected room to AsyncStorage for future sessions
+    try {
+      await AsyncStorage.setItem("selectedRoom", JSON.stringify({
+        block,
+        roomId,
+        selectedLetter,
+      }));
+    } catch (storageError) {
+      console.warn("[ChooseRoomScreen] failed to save room selection:", storageError);
     }
 
     setError("");
@@ -183,7 +215,7 @@ export default function ChooseRoomScreen() {
 
         <Text style={styles.stepLabel}>Step 3 · Choose your room (A, B or C)</Text>
         {!roomId ? (
-          <Text style={styles.hint}>Select a room number first.</Text>
+          <Text style={styles.hint}>Select a unit number first.</Text>
         ) : letters.length === 0 ? (
           <Text style={styles.hint}>No units found in this room.</Text>
         ) : (
