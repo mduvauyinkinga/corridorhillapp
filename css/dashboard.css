@@ -263,6 +263,8 @@
 .skiplink:focus {
   top: 0;
 }
+
+.stat-card {
   background: var(--color-surface);
   border-radius: var(--radius);
   margin-bottom: var(--space-3);

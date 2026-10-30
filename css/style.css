@@ -44,11 +44,13 @@
 
 /* Dark mode - automatically activated via prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
-  --color-bg: #1a202c;
-  --color-surface: #2d3748;
-  --color-text: #e2e8f0;
-  --color-text-muted: #a0aec0;
-  --color-border: #4a5568;
+  :root {
+    --color-bg: #1a202c;
+    --color-surface: #2d3748;
+    --color-text: #e2e8f0;
+    --color-text-muted: #a0aec0;
+    --color-border: #4a5568;
+  }
 }
 
 /* Optional: manually set dark mode via data attribute */

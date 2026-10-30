@@ -60,9 +60,9 @@ export default function SubmitComplaintScreen({ navigation }) {
   const [progress, setProgress] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [isRoomLoading, setIsRoomLoading] = useState(true);
-  const [roomPreview, setRoomPreview] = useState({
   const [recentIssues, setRecentIssues] = useState([]);
   const [recentIssuesLoading, setRecentIssuesLoading] = useState(false);
+  const [roomPreview, setRoomPreview] = useState({
     block: null,
     roomNumber: null,
     unitLetter: null,
@@ -102,15 +102,6 @@ export default function SubmitComplaintScreen({ navigation }) {
         if (!cancelled) setFormError("Could not load your room details. Please try again.");
       } finally {
         setIsRoomLoading(false);
-      }
-    };
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [profile?.roomId, profile?.unitId]); catch (error) {
-        console.error("[SubmitComplaintScreen] load room summary error:", error);
-        if (!cancelled) setFormError("Could not load your room details. Please try again.");
       }
     };
     load();

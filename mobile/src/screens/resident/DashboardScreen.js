@@ -231,7 +231,7 @@ export default function DashboardScreen({ navigation }) {
 
       {loading && <LoadingState message="Loading complaints…" />}
     </ScrollView>
-  };
+  );
 }
 
 const styles = StyleSheet.create({
