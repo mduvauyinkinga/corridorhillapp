@@ -17,15 +17,20 @@ import {
   validateRequired,
   validateEmailDomain,
   setFieldError,
+  focusFirstError,
   setButtonLoading,
   getFirebaseErrorMessage,
   showError,
   clearError,
   $,
+  initPasswordStrength,
+  initPasswordToggles,
 } from "./utils.js";
 
 const form = $("#register-form");
 const submitBtn = $("#register-btn");
+const passwordInput = $("#password");
+const strengthContainer = $("#password-strength");
 
 /**
  * Validate the full form. Returns true if all fields are valid.
@@ -96,7 +101,10 @@ form.addEventListener("submit", async (event) => {
     confirmPassword: $("#confirm-password").value,
   };
 
-  if (!validateForm(data)) return;
+  if (!validateForm(data)) {
+    focusFirstError(form);
+    return;
+  }
 
   const restore = setButtonLoading(submitBtn, "Creating account...");
 
@@ -129,3 +137,9 @@ form.addEventListener("submit", async (event) => {
     restore();
   }
 });
+
+// Initialize password strength meter.
+initPasswordStrength(passwordInput, strengthContainer);
+// Wire up show/hide password toggles.
+initPasswordToggles(passwordInput);
+initPasswordToggles(confirmInput);

@@ -13,6 +13,7 @@ import { getDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {
   validateRequired,
   setFieldError,
+  focusFirstError,
   setButtonLoading,
   getFirebaseErrorMessage,
   showError,
@@ -57,7 +58,10 @@ form.addEventListener("submit", async (event) => {
     setFieldError(emailInput, "Please enter a valid email address.");
     valid = false;
   }
-  if (!valid) return;
+  if (!valid) {
+    focusFirstError(form);
+    return;
+  }
 
   const restore = setButtonLoading(submitBtn, "Signing in...");
 

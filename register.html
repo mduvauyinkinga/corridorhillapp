@@ -84,6 +84,14 @@
             minlength="6"
             required
           />
+          <div class="strength" id="password-strength" aria-live="polite">
+            <div class="strength__bar"><span class="strength__fill"></span></div>
+            <span class="strength__label">Enter password</span>
+          </div>
+          <div class="password-wrap">
+            <input type="password" class="form__input" id="password" name="password" minlength="6" required />
+            <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
           <p class="form__error" data-error="password" role="alert"></p>
         </div>
 
@@ -116,5 +124,16 @@
   </main>
 
   <script type="module" src="js/register.js"></script>
+
+  <!-- Service Worker registration (PWA) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js").then((registration) => {
+        console.log("[sw] Registered:", registration.scope);
+      }).catch((error) => {
+        console.error("[sw] Registration failed:", error);
+      });
+    }
+  </script>
 </body>
 </html>

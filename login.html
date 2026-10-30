@@ -66,10 +66,24 @@
         <p class="form__switch">
           Don't have an account? <a href="register.html">Register</a>
         </p>
+        <p class="form__switch">
+          Forgot your password? <a href="forgot-password.html">Reset it</a>
+        </p>
       </form>
     </div>
   </main>
 
   <script type="module" src="js/login.js"></script>
+
+  <!-- Service Worker registration (PWA) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js").then((registration) => {
+        console.log("[sw] Registered:", registration.scope);
+      }).catch((error) => {
+        console.error("[sw] Registration failed:", error);
+      });
+    }
+  </script>
 </body>
 </html>

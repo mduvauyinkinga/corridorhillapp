@@ -3,7 +3,11 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     match /complaints-photos/{uid}/{allPaths=**} {
-      allow read: if request.auth != null;
+      // Read: owner of the photos or management can read.
+      allow read: if request.auth != null
+        && (request.auth.uid == uid
+          || get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'management');
+      // Write: only the photo owner, size limit, image types only.
       allow write: if request.auth != null
         && request.auth.uid == uid
         && request.resource.size < 5 * 1024 * 1024

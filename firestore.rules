@@ -29,6 +29,31 @@ service cloud.firestore {
       return role == 'resident' || role == 'management';
     }
 
+    // Helper: valid complaint statuses.
+    function isValidStatus(status) {
+      return status in ['Submitted', 'Received', 'Assigned', 'In Progress',
+        'Waiting for Parts', 'Completed', 'Cancelled'];
+    }
+
+    // Helper: valid complaint priorities.
+    function isValidPriority(priority) {
+      return priority in ['Low', 'Medium', 'High', 'Emergency'];
+    }
+
+    // Helper: valid complaint categories.
+    function isValidCategory(category) {
+      return category in ['Electrical', 'Plumbing', 'Furniture', 'Appliances',
+        'Security', 'Windows & Doors', 'Cleaning', 'Other'];
+    }
+
+    // Helper: valid issue values.
+    function isValidIssues(issues) {
+      return issues is list
+        && issues.size() > 0
+        && issues.size() <= 20
+        && issues.all(i, i is string && i.size() > 0 && i.size() <= 100);
+    }
+
     // Users: users can read/write their own doc; management can read/write all.
     // Residents may only manage their own doc and must keep role "resident".
     // Management may manage any user doc but must still use a valid role.
@@ -106,7 +131,10 @@ service cloud.firestore {
       allow read: if signedIn()
         && (request.auth.uid == resource.data.residentId || isManagement());
       allow create: if isResident()
-        && request.resource.data.residentId == request.auth.uid;
+        && request.resource.data.residentId == request.auth.uid
+        && isValidCategory(request.resource.data.category)
+        && isValidIssues(request.resource.data.issues)
+        && isValidPriority(request.resource.data.priority);
       allow update: if isManagement()
         || (
           // Residents may edit their own complaint while the status stays
@@ -114,6 +142,9 @@ service cloud.firestore {
           isResident()
           && request.auth.uid == resource.data.residentId
           && request.resource.data.status == resource.data.status
+          && isValidCategory(request.resource.data.category)
+          && isValidIssues(request.resource.data.issues)
+          && isValidPriority(request.resource.data.priority)
         )
         || (
           // Residents may CANCEL their own complaint ONLY from the

@@ -35,7 +35,14 @@ export function serializeForm(form) {
   return data;
 }
 
-/** Set/clear an inline error message on a field's error container. */
+/** Set/clear an inline error message on a field's error container. *
+ * Also wires aria-invalid / aria-describedby so a screen reader announces
+ * the error when focus lands on the field. Without these the message is
+ * only visible, never spoken.
+ *
+ * @param {HTMLElement} input - the field the error belongs to.
+ * @param {string} message - the error text, or "" to clear.
+ */
 export function setFieldError(input, message) {
   const key = input.dataset.errorKey || input.name;
   const errorEl = document.querySelector(`[data-error="${key}"]`);
@@ -44,6 +51,31 @@ export function setFieldError(input, message) {
     errorEl.hidden = !message;
   }
   input.classList.toggle("is-invalid", Boolean(message));
+  input.setAttribute("aria-invalid", message ? "true" : "false");
+  if (message && errorEl) {
+    // Point the field at its message so AT reads it on focus. An id is
+    // generated when the markup has none.
+    if (!errorEl.id) errorEl.id = `error-${key}`;
+    input.setAttribute("aria-describedby", errorEl.id);
+  } else {
+    input.removeAttribute("aria-describedby");
+  }
+}
+
+/**
+ * Move focus to the first invalid field in a form and announce it.
+ * Called after a failed submit so keyboard/AT users are taken straight
+ * to the problem instead of hunting for the red text.
+ *
+ * @param {HTMLFormElement} form
+ * @returns {boolean} true when a field was focused.
+ */
+export function focusFirstError(form) {
+  if (!form) return false;
+  const firstInvalid = form.querySelector(".is-invalid");
+  if (!firstInvalid) return false;
+  firstInvalid.focus();
+  return true;
 }
 
 /**
@@ -266,6 +298,154 @@ export function priorityBadge(priority) {
     Emergency: "badge badge--priority badge--priority-emergency",
   };
   return map[p] || map.Low;
+}
+
+/* -------------------------- Password strength ------------------------- */
+
+/**
+ * Score a password 0-4: length, mixed case, digit, symbol.
+ * @param {string} pw - The password to score.
+ * @returns {number} Score from 0 (weak) to 4 (strong).
+ */
+export function scorePassword(pw) {
+  if (!pw) return 0;
+  let score = 0;
+  if (pw.length >= 8) score += 1;
+  if (pw.length >= 12) score += 1;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score += 1;
+  if (/\d/.test(pw)) score += 1;
+  if (/[^A-Za-z0-9]/.test(pw)) score += 1;
+  return Math.min(4, score);
+}
+
+/**
+ * Live password-strength meter. Pass the input + container
+ * (#password-strength with .strength__fill + .strength__label).
+ * @param {HTMLInputElement} input - The password input element.
+ * @param {HTMLElement} container - The strength meter container element.
+ */
+export function initPasswordStrength(input, container) {
+  if (!input || !container) return;
+  const label = container.querySelector(".strength__label");
+  const fill = container.querySelector(".strength__fill");
+  const update = () => {
+    const pw = input.value || "";
+    if (!pw) {
+      container.className = "strength";
+      if (label) label.textContent = "Enter password";
+      if (fill) fill.style.width = "0%";
+      return;
+    }
+    const score = scorePassword(pw);
+    const level = score <= 1 ? "weak" : score <= 3 ? "fair" : "strong";
+    const text = score <= 1 ? "Weak" : score <= 3 ? "Fair" : "Strong";
+    container.className = `strength strength--${level}`;
+    if (label) label.textContent = text;
+    if (fill) {
+      const widths = ["0%", "25%", "50%", "75%", "100%"];
+      fill.style.width = widths[score] || "0%";
+    }
+  };
+  input.addEventListener("input", update);
+  update();
+}
+
+/**
+ * Wire up show/hide password toggle buttons.
+ * Looks for [data-password-toggle="<inputId>"] buttons inside the same
+ * form as the input, toggles type between password/text, and updates
+ * aria-label / aria-pressed on each click.
+ *
+ * @param {string|HTMLElement} inputOrSelector - password input or selector.
+ */
+export function initPasswordToggles(inputOrSelector) {
+  const input =
+    typeof inputOrSelector === "string"
+      ? document.getElementById(inputOrSelector)
+      : inputOrSelector;
+  if (!input) return;
+
+  document.querySelectorAll(`[data-password-toggle="${input.id}"]`).forEach(
+    (btn) => {
+      let show = false;
+      btn.addEventListener("click", () => {
+        show = !show;
+        input.type = show ? "text" : "password";
+        btn.textContent = show ? "Hide" : "Show";
+        btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+        btn.setAttribute("aria-pressed", String(show));
+        input.focus();
+      });
+    }
+  );
+}
+
+/**
+ * Validate password fields live (match + min length) so users get
+ * feedback while typing, not only on submit.
+ *
+ * @param {{ passwordInput?: HTMLElement, confirmInput?: HTMLElement }} opts
+ */
+export function initLiveAuthValidation({
+  passwordInput,
+  confirmInput,
+} = {}) {
+  if (passwordInput) {
+    passwordInput.addEventListener("blur", () => {
+      const v = passwordInput.value || "";
+      if (v && v.length < 8)
+        setFieldError(passwordInput, "Password must be at least 8 characters.");
+      else if (v) setFieldError(passwordInput, "");
+    });
+    passwordInput.addEventListener("input", () => {
+      if ((passwordInput.value || "").length >= 8)
+        setFieldError(passwordInput, "");
+      if (confirmInput && confirmInput.value) {
+        setFieldError(
+          confirmInput,
+          confirmInput.value === passwordInput.value
+            ? ""
+            : "Passwords do not match."
+        );
+      }
+    });
+  }
+  if (confirmInput && passwordInput) {
+    confirmInput.addEventListener("input", () => {
+      if (!confirmInput.value) return;
+      setFieldError(
+        confirmInput,
+        confirmInput.value === passwordInput.value
+          ? ""
+          : "Passwords do not match."
+      );
+    });
+  }
+}
+
+/**
+ * Build skeleton placeholder cards (loading shimmer) inside a container.
+ * Replaces "Loading…" text with a perceived-performance win.
+ *
+ * @param {HTMLElement} container - Target element (cleared before render).
+ * @param {number} count - Number of skeleton cards to render (default 3).
+ */
+export function renderSkeletons(container, count = 3) {
+  if (!container) return;
+  container.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const card = document.createElement("div");
+    card.className = "skeleton-card";
+    card.setAttribute("aria-hidden", "true");
+    const l1 = document.createElement("div");
+    l1.className = "skeleton skeleton-line skeleton-line--short";
+    const l2 = document.createElement("div");
+    l2.className = "skeleton skeleton-line skeleton-line--mid";
+    const l3 = document.createElement("div");
+    l3.className = "skeleton skeleton-line";
+    card.append(l1, l2, l3);
+    container.appendChild(card);
+  }
 }
 
 /* --------------------------------- Errors --------------------------------- */

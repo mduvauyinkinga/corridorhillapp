@@ -408,5 +408,16 @@
   </div>
 
   <script type="module" src="js/management.js"></script>
+
+  <!-- Service Worker registration (PWA) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js").then((registration) => {
+        console.log("[sw] Registered:", registration.scope);
+      }).catch((error) => {
+        console.error("[sw] Registration failed:", error);
+      });
+    }
+  </script>
 </body>
 </html>

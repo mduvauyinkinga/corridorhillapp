@@ -15,9 +15,11 @@ const NAV_ITEMS = {
     { label: "Dashboard", href: "dashboard.html" },
     { label: "Submit Complaint", href: "complaint.html" },
     { label: "Track Complaints", href: "tracking.html" },
+    { label: "House Rules", href: "rules.html" },
   ],
   management: [
     { label: "Management", href: "management.html" },
+    { label: "House Rules", href: "rules.html" },
   ],
 };
 
