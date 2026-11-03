@@ -116,7 +116,7 @@ service cloud.firestore {
         && request.resource.data.authorName == getAfter(
           /databases/$(database)/documents/unitMessages/$(messageId)
         ).data.authorName
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt is timestamp;
       allow update, delete: if false;
     }
 
@@ -194,7 +194,7 @@ service cloud.firestore {
         && request.resource.data.message.size() <= 500
         && request.resource.data.authorId == request.auth.uid
         && request.resource.data.authorName is string
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt is timestamp;
       allow update, delete: if false;
     }
 
