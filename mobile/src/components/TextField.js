@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     borderColor: colors.danger,
   },
   inputDisabled: {
-    backgroundColor: "#eef1f5",
+    backgroundColor: colors.border,
     color: colors.textMuted,
   },
   reveal: {

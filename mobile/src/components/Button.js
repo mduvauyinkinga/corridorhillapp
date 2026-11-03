@@ -13,10 +13,10 @@ import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import { colors, layout, radius, spacing, typography } from "../theme";
 
 const VARIANTS = {
-  primary: { background: colors.primary, border: colors.primary, text: "#ffffff" },
+  primary: { background: colors.primary, border: colors.primary, text: colors.text },
   accent: { background: colors.accent, border: colors.accentDark, text: colors.primaryDark },
   ghost: { background: "transparent", border: colors.primary, text: colors.primary },
-  danger: { background: colors.danger, border: colors.danger, text: "#ffffff" },
+  danger: { background: colors.danger, border: colors.danger, text: colors.text },
   subtle: { background: colors.surface, border: colors.border, text: colors.text },
 };
 

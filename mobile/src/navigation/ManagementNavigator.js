@@ -20,6 +20,7 @@ import React from "react";
 
 import ManagementComplaintsScreen from "../screens/management/ManagementComplaintsScreen";
 import ManagementComplaintDetailsScreen from "../screens/management/ManagementComplaintDetailsScreen";
+import ManagementOverviewScreen from "../screens/management/ManagementOverviewScreen";
 import OccupancyScreen from "../screens/management/OccupancyScreen";
 import ResidentsScreen from "../screens/management/ResidentsScreen";
 import RoomProfileScreen from "../screens/management/RoomProfileScreen";
@@ -58,7 +59,7 @@ function UnitsStack() {
       <Stack.Screen
         name="RoomProfile"
         component={RoomProfileScreen}
-        options={{ title: "Room Profile" }}
+        options={{ title: "Unit Profile" }}
       />
     </Stack.Navigator>
   );
@@ -67,6 +68,16 @@ function UnitsStack() {
 export default function ManagementNavigator() {
   return (
     <Tabs.Navigator screenOptions={tabScreenOptions}>
+      <Tabs.Screen
+        name="Overview"
+        component={ManagementOverviewScreen}
+        options={{
+          title: "Overview",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="Complaints"
         component={ComplaintsStack}

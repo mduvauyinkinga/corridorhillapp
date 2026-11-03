@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     minHeight: layout.minTouch,
     paddingHorizontal: spacing.md,
   },
-  rowPressed: { backgroundColor: "#f4f6f9" },
+  rowPressed: { backgroundColor: colors.surface },
   checkbox: {
     width: 22,
     height: 22,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   checkMark: {
-    color: "#ffffff",
+    color: colors.white,
     fontSize: typography.small,
     fontWeight: "700",
     lineHeight: typography.small + 3,

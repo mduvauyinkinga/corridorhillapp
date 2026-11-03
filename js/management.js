@@ -9,7 +9,7 @@
  *   client-side to avoid unnecessary Firestore reads (no N+1).
  * - Complaint details modal with a 6-step status workflow and a
  *   `complaints/{id}/maintenanceNotes` subcollection for notes.
- * - Residents tab (searchable) and Occupancy tab (block → room → letters).
+ * - Searchable Residents and Unit Profiles views.
  */
 
 import { db } from "./firebase.js";
@@ -28,6 +28,7 @@ import {
 import { requireRole } from "./auth.js";
 import { renderNav } from "./nav.js";
 import { loadTimeline, renderTimeline, addTimelineEvent } from "./timeline.js";
+import { fetchUnitMessages, sendUnitMessage } from "./unit-messages.js";
 import {
   formatDate,
   formatDateTime,
@@ -127,12 +128,15 @@ const unitModalComplaints = $("#unit-modal-complaints");
 const unitModalAnnouncements = $("#unit-modal-announcements");
 const unitAnnouncementForm = $("#unit-announcement-form");
 const unitAnnouncementInput = $("#unit-announcement-input");
+const unitAnnouncementTarget = $("#unit-announcement-target");
 const unitAnnouncementSubmit = $("#unit-announcement-submit");
 let activeUnitRoomId = null;
 
+const tabOverviewBtn = $("#tab-overview");
 const tabComplaintsBtn = $("#tab-complaints");
 const tabResidentsBtn = $("#tab-residents");
 const tabUnitsBtn = $("#tab-units");
+const viewOverview = $("#view-overview");
 const viewComplaints = $("#view-complaints");
 const viewResidents = $("#view-residents");
 const viewUnits = $("#view-units");
@@ -159,10 +163,6 @@ const modalPhotos = $("#modal-photos");
 const modalTimeline = $("#modal-timeline");
 const reopenReview = $("#reopen-review");
 
-const occupancyBlock = $("#occupancy-block");
-const occupancyList = $("#occupancy-list");
-const occupancyEmpty = $("#occupancy-empty");
-const viewOccupancy = $("#view-occupancy");
 const notesList = $("#notes-list");
 const noteForm = $("#note-form");
 const noteInput = $("#note-input");
@@ -177,7 +177,6 @@ const noteSubmit = $("#note-submit");
 async function loadAllData() {
   complaintsLoading.classList.remove("hidden");
   residentsLoading.classList.remove("hidden");
-  occupancyLoading.classList.remove("hidden");
 
   const [usersSnap, roomsSnap, unitsSnap, complaintsSnap] = await Promise.all([
     getDocs(collection(db, "users")),
@@ -209,7 +208,6 @@ async function loadAllData() {
 
   complaintsLoading.classList.add("hidden");
   residentsLoading.classList.add("hidden");
-  occupancyLoading.classList.add("hidden");
 }
 
 /**
@@ -537,61 +535,6 @@ function renderResidents() {
   });
 }
 
-/* ------------------------------ Occupancy -------------------------------- */
-
-function renderOccupancy() {
-  const block = occupancyBlock.value;
-  occupancyList.innerHTML = "";
-
-  const roomIds = Object.keys(unitsByRoom).filter((roomId) => {
-    if (!block) return true;
-    const first = unitsByRoom[roomId][0];
-    return first?.block === block;
-  });
-
-  if (roomIds.length === 0) {
-    occupancyEmpty.classList.remove("hidden");
-    return;
-  }
-  occupancyEmpty.classList.add("hidden");
-
-  // Sort rooms numerically by room number.
-  roomIds.sort((a, b) => {
-    const ra = roomsMap[a];
-    const rb = roomsMap[b];
-    return (ra?.roomNumber ?? a).toString().localeCompare((rb?.roomNumber ?? b).toString(), undefined, { numeric: true });
-  });
-
-  roomIds.forEach((roomId) => {
-    const room = roomsMap[roomId];
-    const subRooms = getSubRooms(unitsByRoom[roomId]);
-
-    const roomCard = document.createElement("div");
-    roomCard.className = "occupancy-card";
-
-    const header = document.createElement("div");
-    header.className = "occupancy-card__header";
-    header.textContent = `${room?.block || "?"} · Room ${room?.roomNumber ?? roomId}`;
-    roomCard.appendChild(header);
-
-    const letters = document.createElement("div");
-    letters.className = "occupancy-card__letters";
-
-    subRooms.forEach(({ letter, slots }) => {
-      const chip = document.createElement("span");
-      const occupiedCount = slots.filter((slot) => slot.occupied === true).length;
-      const occupied = occupiedCount > 0;
-      chip.className = "occupancy-chip " + (occupied ? "is-occupied" : "is-available");
-      chip.textContent = `Room ${letter} — ${occupiedCount}/${slots.length} occupied`;
-      chip.setAttribute("aria-label", `${roomId} Room ${letter}: ${occupiedCount} of ${slots.length} beds occupied`);
-      letters.appendChild(chip);
-    });
-
-    roomCard.appendChild(letters);
-    occupancyList.appendChild(roomCard);
-  });
-}
-
 /* ------------------------------ Unit Profiles ---------------------------- */
 
 /**
@@ -672,7 +615,7 @@ const active = profile.complaints.filter(
 
   return {
     roomId: profile.roomId,
-    label: `${block} ${roomNumber}`,
+    label: `Block ${block} · Unit ${roomNumber}`,
     block,
     roomNumber,
     units,
@@ -718,13 +661,17 @@ function renderBlockPicker() {
     name.className = "block-card__name";
     name.textContent = `Block ${block}`;
 
-    const roomsInBlock = Array.from(profiles.values()).filter(
+    const blockProfiles = Array.from(profiles.values()).filter(
       (p) => (p.room?.block || p.units[0]?.block) === block
-    ).length;
+    );
+    const units = blockProfiles.flatMap((profile) => profile.units);
+    const occupied = units.filter((unit) => unit.occupied === true).length;
 
-const meta = document.createElement("span");
+    const meta = document.createElement("span");
     meta.className = "block-card__meta";
-    meta.textContent = `${roomsInBlock} room${roomsInBlock === 1 ? "" : "s"}`;
+    meta.textContent =
+      `${blockProfiles.length} room${blockProfiles.length === 1 ? "" : "s"} · `
+      + `${occupied}/${units.length} beds occupied`;
 
     const cta = document.createElement("span");
     cta.className = "block-card__cta";
@@ -892,13 +839,13 @@ function openUnitModal(roomId) {
 
   const resolved = resolveRoomProfile(profile);
 
-  unitModalTitle.textContent = `Room Profile · ${resolved.label}`;
+  unitModalTitle.textContent = `Unit Profile · Block ${resolved.block}, Unit ${resolved.roomNumber}`;
 
   // Summary grid.
   unitModalSummary.innerHTML = "";
   const summaryItems = [
     ["Room", resolved.label],
-    ["Sub-rooms", `${resolved.subRooms.length} (${resolved.subRooms.map(({ letter }) => letter).join(", ")})`],
+    ["Room Letters", `${resolved.subRooms.length} (${resolved.subRooms.map(({ letter }) => letter).join(", ")})`],
     ["Bed occupancy", `${resolved.occupiedCount}/${resolved.units.length} occupied`],
     ["Residents", `${resolved.residents.length}`],
     ["Complaints", `${resolved.complaintCount}`],
@@ -1021,15 +968,24 @@ async function loadUnitAnnouncements(roomId) {
   unitModalAnnouncements.innerHTML = '<div class="notes-list__empty">Loading shared updates…</div>';
   try {
     const announcementsQuery = query(collection(db, "unitAnnouncements"), where("roomId", "==", roomId), orderBy("createdAt", "desc"));
-    const snap = await getDocs(announcementsQuery);
+    const [snap, messages] = await Promise.all([
+      getDocs(announcementsQuery),
+      fetchUnitMessages(roomId),
+    ]);
     if (roomId !== activeUnitRoomId) return;
     unitModalAnnouncements.innerHTML = "";
-    if (snap.empty) {
+    const updates = [
+      ...snap.docs.map((announcementDoc) => ({
+        id: announcementDoc.id,
+        ...announcementDoc.data(),
+      })),
+      ...messages,
+    ].sort((a, b) => ts(b.createdAt) - ts(a.createdAt));
+    if (updates.length === 0) {
       unitModalAnnouncements.innerHTML = '<div class="notes-list__empty">No shared updates for this unit yet.</div>';
       return;
     }
-    snap.docs.forEach((announcementDoc) => {
-      const announcement = announcementDoc.data();
+    updates.forEach((announcement) => {
       const item = document.createElement("div");
       item.className = "unit-announcement";
       const text = document.createElement("div");
@@ -1037,7 +993,10 @@ async function loadUnitAnnouncements(roomId) {
       text.textContent = announcement.message || "";
       const meta = document.createElement("div");
       meta.className = "note-item__meta";
-      meta.textContent = `${announcement.authorName || "Management"} · ${formatDate(announcement.createdAt)}`;
+      const audience = announcement.roomLetter
+        ? `Room ${announcement.roomLetter}`
+        : "Entire unit";
+      meta.textContent = `${announcement.authorName || "Management"} · ${audience} · ${formatDate(announcement.createdAt)}`;
       item.append(text, meta);
       unitModalAnnouncements.appendChild(item);
     });
@@ -1053,9 +1012,30 @@ async function handleUnitAnnouncement(event) {
   if (!message || !activeUnitRoomId) return;
   unitAnnouncementSubmit.disabled = true;
   try {
-    await addDoc(collection(db, "unitAnnouncements"), { roomId: activeUnitRoomId, message, authorName: currentProfile?.name || "Management", createdAt: serverTimestamp() });
+    const profileEntry = buildRoomProfiles().get(activeUnitRoomId);
+    if (!profileEntry) throw new Error("This unit profile is no longer available.");
+    const resolved = resolveRoomProfile(profileEntry);
+    const roomLetter = unitAnnouncementTarget.value || null;
+    const recipients = resolved.residents.filter((resident) => {
+      const residentUnit = resident.unitId ? unitsMap[resident.unitId] : null;
+      const residentRoomId = residentUnit?.roomId || resident.roomId;
+      const residentRoomLetter = residentUnit?.roomLetter || residentUnit?.unitName || resident.roomLetter;
+      return residentRoomId === activeUnitRoomId
+        && (!roomLetter || residentRoomLetter === roomLetter);
+    });
+    await sendUnitMessage({
+      roomId: activeUnitRoomId,
+      block: resolved.block,
+      unitNumber: resolved.roomNumber,
+      roomLetter,
+      recipientUids: recipients.map((resident) => resident.uid),
+      message,
+      authorId: currentProfile?.uid,
+      authorName: currentProfile?.name || "Management",
+    });
     unitAnnouncementInput.value = "";
-    toast("Shared unit update sent.", "success");
+    unitAnnouncementTarget.value = "";
+    toast(`Message sent to ${recipients.length} resident${recipients.length === 1 ? "" : "s"}.`, "success");
     await loadUnitAnnouncements(activeUnitRoomId);
   } catch (error) {
     console.error("[management] add unit announcement error:", error);
@@ -1480,35 +1460,58 @@ async function handleAddNote(event) {
 /* -------------------------------- Tabs ----------------------------------- */
 
 function switchTab(tab) {
+  const isOverview = tab === "overview";
   const isComplaints = tab === "complaints";
   const isResidents = tab === "residents";
-  const isOccupancy = tab === "occupancy";
   const isUnits = tab === "units";
 
+  tabOverviewBtn.classList.toggle("is-active", isOverview);
   tabComplaintsBtn.classList.toggle("is-active", isComplaints);
   tabResidentsBtn.classList.toggle("is-active", isResidents);
-  tabOccupancyBtn.classList.toggle("is-active", isOccupancy);
   tabUnitsBtn.classList.toggle("is-active", isUnits);
 
+  tabOverviewBtn.setAttribute("aria-selected", String(isOverview));
   tabComplaintsBtn.setAttribute("aria-selected", String(isComplaints));
   tabResidentsBtn.setAttribute("aria-selected", String(isResidents));
-  tabOccupancyBtn.setAttribute("aria-selected", String(isOccupancy));
   tabUnitsBtn.setAttribute("aria-selected", String(isUnits));
 
+  viewOverview.classList.toggle("hidden", !isOverview);
   viewComplaints.classList.toggle("hidden", !isComplaints);
   viewResidents.classList.toggle("hidden", !isResidents);
-  viewOccupancy.classList.toggle("hidden", !isOccupancy);
   viewUnits.classList.toggle("hidden", !isUnits);
 }
 
 /* ----------------------------- Event wiring ------------------------------ */
 
+tabOverviewBtn.addEventListener("click", () => switchTab("overview"));
 tabComplaintsBtn.addEventListener("click", () => switchTab("complaints"));
 tabResidentsBtn.addEventListener("click", () => switchTab("residents"));
-tabOccupancyBtn.addEventListener("click", () => switchTab("occupancy"));
 tabUnitsBtn.addEventListener("click", () => {
   switchTab("units");
   if (!selectedBlock) showBlockPicker();
+});
+
+document.querySelectorAll("[data-dashboard-view]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const targetView = button.dataset.dashboardView;
+    switchTab(targetView);
+
+    if (targetView === "units") {
+      if (!selectedBlock) showBlockPicker();
+      return;
+    }
+
+    if (targetView === "complaints") {
+      searchInput.value = "";
+      filterStatus.value = button.dataset.complaintStatus || "";
+      filterCategory.value = "";
+      filterBlock.value = "";
+      filterFloor.value = "";
+      filterDate.value = "";
+      sortBy.value = "newest";
+      refreshComplaintsView();
+    }
+  });
 });
 
 searchInput.addEventListener("input", refreshComplaintsView);
@@ -1520,7 +1523,6 @@ filterDate.addEventListener("change", refreshComplaintsView);
 sortBy.addEventListener("change", refreshComplaintsView);
 
 residentSearch.addEventListener("input", renderResidents);
-occupancyBlock.addEventListener("change", renderOccupancy);
 
 unitSearch.addEventListener("input", refreshUnitsView);
 unitStatus.addEventListener("change", refreshUnitsView);
@@ -1566,7 +1568,7 @@ async function init() {
   // the HTML markup (management.html). Populating them again here would
   // create duplicate <option> elements, so we leave them untouched.
 
-  switchTab("complaints");
+  switchTab("overview");
 
   try {
     await loadAllData();
@@ -1580,7 +1582,6 @@ async function init() {
     renderStats();
     refreshComplaintsView();
     renderResidents();
-    renderOccupancy();
     showBlockPicker();
   } catch (error) {
     console.error("[management] init error:", error);

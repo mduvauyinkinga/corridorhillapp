@@ -67,6 +67,6 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: typography.tiny,
   },
-  emptyBox: { padding: spacing.lg, backgroundColor: "#f4f6f9", borderRadius: 8 },
+  emptyBox: { padding: spacing.lg, backgroundColor: colors.surface, borderRadius: 8 },
   emptyText: { color: colors.textMuted, fontSize: typography.small },
 });

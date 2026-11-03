@@ -309,7 +309,7 @@ export function resolveRoomProfile(profile) {
 
   return {
     roomId: profile.roomId,
-    label: `${block} ${roomNumber}`,
+    label: `Block ${block} · Unit ${roomNumber}`,
     block,
     roomNumber,
     floor: room?.floor ?? units[0]?.floor ?? null,

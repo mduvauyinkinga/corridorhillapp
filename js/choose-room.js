@@ -208,7 +208,7 @@ async function loadUnits(roomId) {
     const q = query(collection(db, "units"), where("roomId", "==", roomId));
     const unitsSnap = await getDocs(q);
 
-    unitStatus.textContent = "Select an available room.";
+    unitStatus.textContent = "Select an available room letter.";
     if (unitsSnap.empty) {
       unitStatus.textContent = "No units in this room.";
       return;
@@ -278,7 +278,7 @@ async function loadUnits(roomId) {
 function updateSelection() {
   if (selectedRoom && selectedUnit) {
     selectionText.textContent =
-      `Block ${selectedBlock} · Unit ${selectedRoom.roomNumber} · Room ${selectedUnit.roomLetter || selectedUnit.unitName || "?"}`;
+      `Block ${selectedBlock} · Unit Number ${selectedRoom.roomNumber} · Room Letter ${selectedUnit.roomLetter || selectedUnit.unitName || "?"}`;
     summary.hidden = false;
     confirmBtn.disabled = false;
     setProgress(4);

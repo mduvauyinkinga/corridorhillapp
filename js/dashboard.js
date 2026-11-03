@@ -27,6 +27,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireRole } from "./auth.js";
 import { renderNav } from "./nav.js";
+import { fetchResidentMessages, subscribeResidentMessages } from "./unit-messages.js";
 import {
   formatDate,
   statusBadge,
@@ -39,6 +40,32 @@ import {
 
 const noRoomState = $("#no-room-state");
 const dashboardState = $("#dashboard-state");
+const unitMessagesContainer = $("#unit-messages");
+
+function renderUnitMessages(unitMessages) {
+  unitMessagesContainer.innerHTML = "";
+  if (unitMessages.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "dashboard__list-empty";
+    empty.textContent = "No messages for your unit yet.";
+    unitMessagesContainer.appendChild(empty);
+    return;
+  }
+
+  unitMessages.forEach((message) => {
+    const item = document.createElement("div");
+    item.className = "note-item";
+    const text = document.createElement("div");
+    text.className = "note-item__text";
+    text.textContent = message.message || "";
+    const meta = document.createElement("div");
+    meta.className = "note-item__meta";
+    const target = message.roomLetter ? `Room ${message.roomLetter}` : "Entire unit";
+    meta.textContent = `${message.authorName || "Management"} · Block ${message.block} · Unit ${message.unitNumber} · ${target} · ${formatDate(message.createdAt)}`;
+    item.append(text, meta);
+    unitMessagesContainer.appendChild(item);
+  });
+}
 
 /** Fetch the resident's complaints (cached for the whole page). */
 async function loadComplaints(uid) {
@@ -124,6 +151,12 @@ function complaintCard(complaint) {
 
   card.appendChild(head);
   card.appendChild(meta);
+
+  const detailsLink = document.createElement("a");
+  detailsLink.className = "complaint-card__link";
+  detailsLink.href = `tracking.html?complaintId=${encodeURIComponent(complaint.id)}`;
+  detailsLink.textContent = "View details and messages";
+  card.appendChild(detailsLink);
   return card;
 }
 
@@ -166,6 +199,14 @@ async function renderDashboard(profile) {
   } catch (error) {
     console.error("[dashboard] load complaints error:", error);
   }
+
+  let unitMessages = [];
+  try {
+    unitMessages = await fetchResidentMessages(profile.uid);
+  } catch (error) {
+    console.error("[dashboard] load unit messages error:", error);
+  }
+  renderUnitMessages(unitMessages);
 
 // Statistics.
   const active = complaints.filter(
@@ -223,9 +264,15 @@ async function renderDashboard(profile) {
     ]);
     const noteDate = note?.createdAt?.toMillis?.() || 0;
     const announcementDate = announcement?.createdAt?.toMillis?.() || 0;
-    const update = announcementDate > noteDate
-      ? { ...announcement, isAnnouncement: true }
-      : note;
+    const latestUnitMessage = unitMessages[0] || null;
+    const messageDate = latestUnitMessage?.createdAt?.toMillis?.() || 0;
+    let update = note;
+    if (announcementDate > (update?.createdAt?.toMillis?.() || 0)) {
+      update = { ...announcement, isAnnouncement: true };
+    }
+    if (messageDate > Math.max(noteDate, announcementDate)) {
+      update = { ...latestUnitMessage, isAnnouncement: true };
+    }
     if (!update) {
       const empty = document.createElement("div");
       empty.className = "notes-list__empty";
@@ -240,7 +287,7 @@ async function renderDashboard(profile) {
     text.textContent = update.isAnnouncement ? update.message || "" : update.text || "";
     const meta = document.createElement("div");
     meta.className = "note-item__meta";
-    meta.textContent = `${update.isAnnouncement ? "Shared unit update" : update.authorName || "Management"} · ${formatDate(
+    meta.textContent = `${update.isAnnouncement ? "Unit Alerts" : update.authorName || "Management"} · ${formatDate(
       update.createdAt
     )}`;
     item.appendChild(text);
@@ -269,6 +316,11 @@ async function init() {
   }
 
   dashboardState.classList.remove("hidden");
+  subscribeResidentMessages(
+    profile.uid,
+    renderUnitMessages,
+    (error) => console.error("[dashboard] unit inbox listener error:", error)
+  );
   await renderDashboard(profile);
 }
 

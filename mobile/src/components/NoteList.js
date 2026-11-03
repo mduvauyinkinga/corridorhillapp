@@ -33,6 +33,7 @@ export default function NoteList({
           <Text style={styles.meta}>
             {`${note.authorName || fallbackAuthor} · ${formatDate(note.createdAt)}`}
           </Text>
+          {note.scope ? <Text style={styles.meta}>{note.scope}</Text> : null}
         </View>
       ))}
     </View>
@@ -42,7 +43,7 @@ export default function NoteList({
 const styles = StyleSheet.create({
   list: { gap: spacing.sm },
   item: {
-    backgroundColor: "#f7f9fc",
+    backgroundColor: colors.border,
     borderRadius: radius.sm,
     borderLeftWidth: 3,
     borderLeftColor: colors.accent,
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
   emptyBox: {
     padding: spacing.lg,
     borderRadius: radius.sm,
-    backgroundColor: "#f4f6f9",
+    backgroundColor: colors.surface,
   },
   emptyText: { color: colors.textMuted, fontSize: typography.small },
 });

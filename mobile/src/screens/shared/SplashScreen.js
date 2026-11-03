@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   logo: { width: 96, height: 96, borderRadius: 20 },
   title: {
     marginTop: spacing.lg,
-    color: "#ffffff",
+    color: colors.white,
     fontSize: typography.h1,
     fontWeight: "700",
   },
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   spinner: { marginTop: spacing.xxl },
   status: {
     marginTop: spacing.md,
-    color: "#cbd7e3",
+    color: colors.textMuted,
     fontSize: typography.small,
   },
 });

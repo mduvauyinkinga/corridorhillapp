@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     minHeight: layout.minTouch,
   },
-  controlDisabled: { backgroundColor: "#eef1f5" },
+  controlDisabled: { backgroundColor: colors.border },
   valueText: { color: colors.text, fontSize: typography.body },
   placeholderText: { color: colors.textMuted, fontSize: typography.body },
   icon: { fontSize: typography.body },
@@ -157,5 +157,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: spacing.sm,
   },
-  sheetButtonText: { color: "#ffffff", fontWeight: "700" },
+  sheetButtonText: { color: colors.white, fontWeight: "700" },
 });

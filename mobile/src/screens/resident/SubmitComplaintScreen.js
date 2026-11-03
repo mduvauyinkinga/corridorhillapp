@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: radius.sm,
-    backgroundColor: "#eef1f5",
+    backgroundColor: colors.border,
   },
   removeText: {
     textAlign: "center",

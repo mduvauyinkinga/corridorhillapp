@@ -3,7 +3,6 @@
  * ------------------------------------------------------------------
  * The Complaints tab of the management console — port of the
  * `#view-complaints` section of management.html + js/management.js:
- *   - the nine overview statistics (renderStats),
  *   - search + status / category / block / floor / date / sort filters
  *     (getFilteredRows),
  *   - the complaint table re-laid-out as cards (renderComplaints) with a
@@ -24,13 +23,11 @@ import Button from "../../components/Button";
 import DateField from "../../components/DateField";
 import { Card, ScreenTitle, SectionTitle } from "../../components/Layout";
 import OptionPicker from "../../components/OptionPicker";
-import StatCard from "../../components/StatCard";
 import TextField from "../../components/TextField";
 import { EmptyState, ErrorNotice, LoadingState } from "../../components/States";
 import { useToast } from "../../context/ToastContext";
 import {
   EMPTY_FILTERS,
-  computeStats,
   filterComplaintRows,
   loadManagementData,
   resolveAllRows,
@@ -115,8 +112,6 @@ export default function ManagementComplaintsScreen({ navigation }) {
     load();
   }, [load]);
 
-  const stats = useMemo(() => (data ? computeStats(data) : null), [data]);
-
   const rows = useMemo(() => {
     if (!data) return [];
     const resolved = resolveAllRows(data.complaints, data);
@@ -128,37 +123,12 @@ export default function ManagementComplaintsScreen({ navigation }) {
 
   if (loading) return <LoadingState message="Loading management data…" />;
 
-  /* The stats + search + filter block above the list (toolbar parity). */
+  /* Search and filter controls stay with the complaint list. */
   const renderHeader = (
     <View>
-      <ScreenTitle
-        title="Management Dashboard"
-        subtitle="Central control panel for residence management."
-      />
       <ErrorNotice message={error} onRetry={load} />
 
-      <SectionTitle>Overview statistics</SectionTitle>
-      <View style={styles.statsRow}>
-        <StatCard label="Total residents" value={stats.residents} />
-        <StatCard label="Total rooms" value={stats.rooms} />
-      </View>
-      <View style={styles.statsRow}>
-        <StatCard label="Occupied rooms" value={stats.occupied} accent={colors.danger} />
-        <StatCard label="Available rooms" value={stats.available} accent={colors.success} />
-      </View>
-      <View style={styles.statsRow}>
-        <StatCard label="Total complaints" value={stats.complaints} />
-        <StatCard label="Submitted" value={stats.submitted} />
-      </View>
-      <View style={styles.statsRow}>
-        <StatCard label="In progress" value={stats.inProgress} accent={colors.info} />
-        <StatCard label="Waiting for parts" value={stats.waiting} accent={colors.warning} />
-      </View>
-      <View style={styles.statsRow}>
-        <StatCard label="Completed" value={stats.completed} accent={colors.success} />
-        <View style={styles.statSpacer} />
-      </View>
-
+      <ScreenTitle title="Complaints" subtitle="Search and manage resident reports." />
       <SectionTitle style={styles.spacer}>Search & filters</SectionTitle>
       <TextField
         label="Search"
@@ -271,8 +241,6 @@ export default function ManagementComplaintsScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  statsRow: { flexDirection: "row", gap: spacing.md, marginBottom: spacing.md },
-  statSpacer: { flex: 1, minWidth: "46%" },
   spacer: { marginTop: spacing.xl },
   card: { paddingVertical: spacing.md },
   rowHead: {

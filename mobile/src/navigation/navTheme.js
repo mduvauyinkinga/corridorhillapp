@@ -1,8 +1,9 @@
 /**
  * navigation/navTheme.js
  * ------------------------------------------------------------------
- * Navigation theming so the app's chrome matches the website's navbar:
- * deep navy (#143c5c) headers, light (#f4f6f9) background, gold accents.
+ * Navigation theming so the app's chrome matches the website's navbar
+ * (deep navy headers, light background, gold accents). Values come from
+ * the shared tokens in ../theme/tokens.js, not from hardcoded strings.
  */
 
 import { DefaultTheme } from "@react-navigation/native";
@@ -25,7 +26,7 @@ export const navigationTheme = {
 /** Native-stack screen options shared by every screen. */
 export const screenOptions = {
   headerStyle: { backgroundColor: colors.primary },
-  headerTintColor: "#ffffff",
+  headerTintColor: colors.text,
   headerTitleStyle: { fontWeight: "700", fontSize: typography.h3 },
   headerBackTitle: "Back",
   contentStyle: { backgroundColor: colors.bg },
@@ -34,7 +35,7 @@ export const screenOptions = {
 /** Tab bar styling (navy text, gold active tint — same brand pairing). */
 export const tabScreenOptions = {
   headerStyle: { backgroundColor: colors.primary },
-  headerTintColor: "#ffffff",
+  headerTintColor: colors.text,
   headerTitleStyle: { fontWeight: "700", fontSize: typography.h3 },
   tabBarActiveTintColor: colors.primary,
   tabBarInactiveTintColor: colors.textMuted,
@@ -46,3 +47,4 @@ export const tabScreenOptions = {
   },
   tabBarLabelStyle: { fontSize: typography.tiny, fontWeight: "600" },
 };
+

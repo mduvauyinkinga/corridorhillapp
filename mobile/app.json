@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#f4f6f9",
+    "backgroundColor": "#ffffff",
     "primaryColor": "#143c5c",
     "assetBundlePatterns": [
       "**/*"

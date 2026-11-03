@@ -71,7 +71,8 @@ Publish `storage.rules` separately in the Firebase Storage Rules tab.
 Occupancy is stored in `units`, while resident details are stored in `users`.
 To make a bed available automatically when a manager deletes a
 `users/{uid}` document (including a deletion made in the Firestore console),
-deploy the included Cloud Function once:
+deploy the included Cloud Function once. It also deletes that resident's
+`unitInbox` copies:
 
 ```powershell
 firebase use <your-firebase-project-id>
@@ -81,15 +82,14 @@ firebase deploy --only functions:releaseUnitsForDeletedResident
 
 Install the Firebase CLI and sign in first if you have not already done so.
 
-The function finds every unit with that resident's ID, sets `occupied` to
-`false`, and clears `residentId`. The management dashboard also repairs any
-older orphaned bed records when it is opened, but the function is what keeps
-availability current immediately for all users.
+The function finds every bed with that resident's ID, sets `occupied` to
+`false`, clears `residentId`, and removes that resident's inbox copies. The
+management dashboard also repairs older orphaned beds when opened.
 
 ### 4. Seed rooms & units
 
-Each parent room has Rooms A, B, and C, with two residents allowed in each
-lettered room. This is stored as two bed slots per letter, for example
+Each Unit Number has Room Letters A, B, and C, with two residents allowed in
+each room letter. This is stored as two bed slots per letter, for example
 `F506-A-1` and `F506-A-2`. New projects should run `seed-units.js` to create
 1,500 bed-slot documents. Existing projects with the old `F506-A` format must
 run `migrate-units-to-two-beds.js` once as a management user before deploying
@@ -197,6 +197,15 @@ pointing to the `main` branch root.
 
 ## Firestore Data Model
 
+### Location hierarchy
+
+The resident-facing location is **Block → Unit Number → Room Letter**. For
+example, Block F, Unit Number 506, Room Letter C. Existing identifiers and
+records are preserved: `rooms/F506` remains the parent unit record, and
+`units/F506-C-1` / `units/F506-C-2` remain the two bed-slot records for Room C.
+The `rooms` collection's `roomNumber` field continues to hold the existing
+numeric unit number; no renumbering or data migration is required.
+
 ```
 users/{uid}
   name, studentNumber, email, role, roomId, unitId, createdAt
@@ -212,10 +221,32 @@ complaints/{complaintId}
 
 unitAnnouncements/{announcementId}
   roomId, message, authorName, createdAt
+
+unitMessages/{messageId}
+  roomId, block, unitNumber, roomLetter, recipientUids,
+  message, authorId, authorName, createdAt
+
+users/{uid}/unitInbox/{messageId}
+  messageId, roomId, block, unitNumber, roomLetter,
+  message, authorId, authorName, createdAt
 ```
 
-Using a separate `units` collection keeps documents small and makes it trivial
-to query available units (`occupied == false`).
+`units/{unitId}` continues to represent an individual bed slot and occupancy.
+New broadcasts store a private canonical message and atomically create an inbox
+copy for each selected resident. `roomLetter: null` targets every room letter
+in the unit; `A`, `B`, or `C` targets only residents currently assigned to that
+room letter. Existing `unitAnnouncements` are retained as legacy unit-wide
+updates and do not need to be migrated.
+
+The `unitMessages` indexes in `firestore.indexes.json` support management
+history. Resident inboxes are per-user subcollections and use the standard
+`createdAt` index.
+
+Publish the updated Firestore rules and indexes before deploying clients that
+send `unitMessages`; no existing location documents or room assignments need
+to be migrated. Inbox messages update live while the resident is signed in to
+the web or mobile app. Push notifications for closed apps are not configured
+by this change and require web push and mobile push credentials.
 
 ---
 
@@ -267,16 +298,38 @@ to query available units (`occupied == false`).
 
 ---
 
+## Mobile App (React Native / Expo)
+
+The mobile app (`mobile/`) is a native companion to the web app, sharing the
+same Firebase backend.
+
+- **Navigator**: `mobile/src/navigation/RootNavigator.js` wires the stacks
+  by role (resident → bottom tabs, management → bottom tabs, unauthenticated →
+  auth stack).
+- **Theme**: `mobile/src/theme/` is the design system. It has been refactored
+  to reference `tokens.js`, the shared design-token object, instead of
+  duplicating brand/spacing/radius values.
+
+### Run the mobile app
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+---
+
 ## Phase 1 Features
 
 - Home page with hero/about/features.
 - Resident registration (validates `@tut4life.ac.za` email).
 - Login with role-based redirect.
 - Choose room (browse block → room → available unit).
-- Resident dashboard (name, room, unit, actions).
+- Resident dashboard (name, room, unit, complaint stats, expandable complaint and message sections).
 - Submit complaint (multi-select issues, defaults to **Pending**).
 - Complaint tracking (resident sees only their own).
-- Management dashboard (all complaints, status updates).
+- Management dashboard with a clickable overview for residents, units, occupancy, and complaint statuses.
 
 ---
 

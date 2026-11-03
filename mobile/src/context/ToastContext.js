@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
   },
   text: {
-    color: "#ffffff",
+    color: colors.white,
     fontSize: typography.body,
     fontWeight: "600",
   },

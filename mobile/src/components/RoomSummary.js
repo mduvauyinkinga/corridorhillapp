@@ -14,7 +14,7 @@ import { colors, radius, spacing, typography } from "../theme";
 export default function RoomSummary({ block, roomNumber, roomLetter }) {
   const items = [
     { label: "Block", value: block },
-    { label: "Room", value: roomNumber },
+    { label: "Unit Number", value: roomNumber },
     { label: "Room letter", value: roomLetter },
   ];
 

@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg },
   subtitle: { color: colors.textMuted, marginBottom: spacing.lg },
   noteBox: {
-    backgroundColor: "#eef3f8",
+    backgroundColor: colors.border,
     borderRadius: 8,
     padding: spacing.md,
   },

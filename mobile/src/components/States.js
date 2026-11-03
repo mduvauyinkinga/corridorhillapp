@@ -56,8 +56,8 @@ export function FormAlert({ message, type = "error" }) {
   if (!message) return null;
   const palette =
     type === "success"
-      ? { bg: "#d1fae5", fg: colors.success }
-      : { bg: "#fde8e8", fg: colors.danger };
+      ? { bg: colors.success, fg: colors.success }
+      : { bg: colors.danger, fg: colors.danger };
   return (
     <View style={[styles.alert, { backgroundColor: palette.bg }]} accessibilityRole="alert">
       <Text style={[styles.alertText, { color: palette.fg }]}>{message}</Text>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: typography.body,
   },
   errorBox: {
-    backgroundColor: "#fde8e8",
+    backgroundColor: colors.danger,
     borderRadius: radius.md,
     padding: spacing.lg,
     marginBottom: spacing.lg,

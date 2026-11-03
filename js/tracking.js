@@ -424,7 +424,7 @@ async function handleCancel(complaint) {
 
 /* ------------------------------ Table loading ------------------------------ */
 
-async function loadComplaints(profile) {
+async function loadComplaints(profile, openComplaintId = null) {
   try {
     const q = query(
       collection(db, "complaints"),
@@ -440,6 +440,7 @@ async function loadComplaints(profile) {
       return;
     }
 
+    let requestedComplaint = null;
     for (const docSnap of snap.docs) {
       const data = { id: docSnap.id, ...docSnap.data() };
       const { roomLabel, unitLabel } = await resolveRoomAndUnit(
@@ -526,6 +527,17 @@ actionsCell.appendChild(viewBtn);
       tr.appendChild(actionsCell);
       tr.appendChild(manageCell);
       tbody.appendChild(tr);
+      if (data.id === openComplaintId) {
+        requestedComplaint = { complaint: data, roomLabel, unitLabel };
+      }
+    }
+
+    if (requestedComplaint) {
+      openComplaintModal(
+        requestedComplaint.complaint,
+        requestedComplaint.roomLabel,
+        requestedComplaint.unitLabel
+      );
     }
   } catch (error) {
     console.error("[tracking] load error:", error);
@@ -560,7 +572,8 @@ async function init() {
   if (!profile) return;
 
   renderNav(profile);
-  await loadComplaints(profile);
+  const complaintId = new URLSearchParams(window.location.search).get("complaintId");
+  await loadComplaints(profile, complaintId);
 }
 
 init();

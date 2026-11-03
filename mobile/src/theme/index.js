@@ -1,116 +1,86 @@
 /**
- * theme/index.js
- * ------------------------------------------------------------------
- * The mobile design system.
+ * theme/index.js — The mobile design system (delegates to shared tokens).
  *
- * Every value here is taken from the EXISTING website so the mobile app
- * keeps the same brand identity and status meanings:
- *   - css/style.css       → :root variables (colours, radii, shadows)
- *   - css/style.css       → .badge--pending / --in-progress / --completed
- *   - css/management.css  → .badge--received / --assigned / --waiting /
- *                           --cancelled / .badge--priority-* / --overdue
+ * Historically this file kept its own copies of the brand/spacing/radius
+ * values. Those duplicates drifted, so we now import the canonical values
+ * from ../theme/tokens.js and only add the mobile-specific pieces here
+ * (spacing in "8px units", a few derived helpers, mobile-specific shadow).
  *
- * Colours are intentionally identical hex values to the website so a
- * resident or manager sees the same visual language on both clients.
+ * Web consumers keep css/style.css :root as the single source. When the
+ * web CSS is updated, tokens.js is updated once, and this file picks it
+ * up automatically.
  */
 
+import tokens from "./tokens";
+
+// Brand palette — exact mirror of css/style.css :root
 export const colors = {
-  /* Brand palette (css/style.css :root) */
-  primary: "#143c5c",
-  primaryDark: "#0d2a42",
-  accent: "#e8a33d",
-  accentDark: "#c9871f",
-
-  /* Neutrals - Light mode (default) */
-  bg: "#f4f6f9",
-  surface: "#ffffff",
-  text: "#22303c",
-  textMuted: "#5c6b7a",
-  border: "#dde3ea",
-  borderStrong: "#c6d0da",
-
-  /* Status colours */
-  success: "#2e9e5b",
-  warning: "#e0a024",
-  info: "#2f7fd6",
-  danger: "#d64545",
-
-  /* Overlays */
+  ...tokens.colors,
   overlay: "rgba(13, 42, 66, 0.55)",
-
-  /* Complaint status badges — mirrors statusBadge() in js/utils.js */
-  status: {
-    Submitted: { bg: "#fdeeca", fg: "#8a5a00" },
-    Received: { bg: "#fef3c7", fg: "#92400e" },
-    Assigned: { bg: "#e0e7ff", fg: "#3730a3" },
-    "In Progress": { bg: "#dbeafe", fg: "#1d4ed8" },
-    "Waiting for Parts": { bg: "#ffe4e6", fg: "#9f1239" },
-    Completed: { bg: "#d1fae5", fg: "#065f46" },
-    Cancelled: { bg: "#e5e7eb", fg: "#4b5563" },
-  },
-
-  /* Priority badges — mirrors priorityBadge() in js/utils.js */
-  priority: {
-    Low: { bg: "#e2e8f0", fg: "#475569" },
-    Medium: { bg: "#fef3c7", fg: "#92400e" },
-    High: { bg: "#ffe4e6", fg: "#9f1239" },
-    Emergency: { bg: "#7f1d1d", fg: "#ffffff" },
-  },
-
-  /* Overdue badge */
-  overdue: { bg: "#fde8e8", fg: "#9b1c1c" },
-
-  /* Occupancy chips (css/management.css .occupancy-chip) */
-  occupiedChip: { bg: "#ffe4e6", fg: "#9f1239" },
-  availableChip: { bg: "#d1fae5", fg: "#065f46" },
-
-  /* Dark mode overrides - applied when Appearance.getColorScheme() === 'dark' */
-  dark: {
-    bg: "#1a202c",
-    surface: "#2d3748",
-    text: "#e2e8f0",
-    textMuted: "#a0aec0",
-    border: "#4a5568",
-  },
+  borderStrong: tokens.colors.borderStrong,
 };
 
+// Status badges — exact mirror of css/management.css badge classes
+export const status = {
+  ...tokens.status,
+};
+
+// Priority badges — exact mirror of js/utils.js priorityBadge()
+export const priority = {
+  ...tokens.priority,
+};
+
+export const overdue = {
+  ...tokens.overdue,
+};
+
+export const occupiedChip = {
+  ...tokens.occupiedChip,
+};
+
+export const availableChip = {
+  ...tokens.availableChip,
+};
+
+// Dark mode overrides (applied via a ThemeProvider in App.js)
+export const dark = {
+  ...tokens.dark,
+};
+
+// Spacing — mobile-friendly scale that maps 1:1 to css --space-*
+// --space-1 = 0.5rem = 8px  => xs
+// --space-2 = 1rem     = 16px => sm
+// --space-3 = 1.5rem   = 24px => md
+// --space-4 = 2rem     = 32px => lg
+// --space-5 = 3rem     = 48px => xl
 export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  xxl: 32,
+  xs: tokens.spacing.xs,
+  sm: tokens.spacing.sm,
+  md: tokens.spacing.md,
+  lg: tokens.spacing.lg,
+  xl: tokens.spacing.xl,
+  xxl: tokens.spacing.xxl,
 };
 
+// Radius — maps to css --radius
+// --radius: 0.5rem   = 8px  => 8dp
+// --radius-sm: 0.25rem = 4px => 4dp
+// --radius-lg: 0.75rem = 12px => 12dp
 export const radius = {
-  sm: 6,
-  md: 10,
-  lg: 14,
-  pill: 999,
+  ...tokens.radius,
 };
 
 export const typography = {
-  h1: 24,
-  h2: 19,
-  h3: 16,
-  body: 15,
-  small: 13,
-  tiny: 11.5,
+  ...tokens.typography,
 };
 
-/** Touch targets are kept >= 44pt for reliable mobile interaction. */
+// Layout
 export const layout = {
-  minTouch: 44,
-  screenPadding: spacing.lg,
+  ...tokens.layout,
 };
 
+// Shadow — mobile elevation
 export const shadow = {
-  card: {
-    elevation: 2,
-    shadowColor: "#143c5c",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-  },
+  ...tokens.shadow,
 };
+

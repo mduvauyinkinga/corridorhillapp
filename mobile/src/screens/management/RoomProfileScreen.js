@@ -25,11 +25,16 @@ import { Badge, StatusBadge } from "../../components/Badges";
 import Button from "../../components/Button";
 import { Card, KeyValue, ScreenTitle, SectionTitle } from "../../components/Layout";
 import NoteList from "../../components/NoteList";
+import OptionPicker from "../../components/OptionPicker";
 import { ErrorNotice, LoadingState } from "../../components/States";
 import TextField from "../../components/TextField";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import { fetchAnnouncements, sendAnnouncement } from "../../services/announcementService";
+import { fetchAnnouncements } from "../../services/announcementService";
+import {
+  fetchUnitMessages,
+  sendUnitMessage,
+} from "../../services/unitMessageService";
 import {
   buildRoomProfiles,
   loadManagementData,
@@ -42,19 +47,31 @@ import { getFirebaseErrorMessage } from "../../utils/errors";
 
 export default function RoomProfileScreen({ navigation, route }) {
   const roomId = route?.params?.roomId;
-  const { profile } = useAuth();
+  const { profile, uid } = useAuth();
   const { showToast } = useToast();
 
   const [data, setData] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [message, setMessage] = useState("");
+  const [targetRoomLetter, setTargetRoomLetter] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
   const loadAnnouncements = useCallback(async () => {
     try {
-      setAnnouncements(await fetchAnnouncements(roomId));
+      const [legacyAnnouncements, unitMessages] = await Promise.all([
+        fetchAnnouncements(roomId),
+        fetchUnitMessages(roomId),
+      ]);
+      setAnnouncements(
+        [...legacyAnnouncements, ...unitMessages]
+          .map((item) => ({
+            ...item,
+            scope: item.roomLetter ? `Room ${item.roomLetter}` : "Entire unit",
+          }))
+          .sort((a, b) => timestampMs(b.createdAt) - timestampMs(a.createdAt))
+      );
     } catch (loadError) {
       console.warn("[RoomProfileScreen] announcements error:", loadError);
     }
@@ -110,13 +127,31 @@ export default function RoomProfileScreen({ navigation, route }) {
     setSending(true);
     setError("");
     try {
-      await sendAnnouncement({
+      const profileEntry = buildRoomProfiles(data).get(roomId);
+      if (!profileEntry) throw new Error("This unit profile is no longer available.");
+      const resolved = resolveRoomProfile(profileEntry);
+      const recipients = resolved.residents.filter((resident) => {
+        const residentUnit = resident.unitId ? data.unitsMap[resident.unitId] : null;
+        const residentRoomId = residentUnit?.roomId || resident.roomId;
+        const residentRoomLetter = residentUnit?.roomLetter
+          || residentUnit?.unitName
+          || resident.roomLetter;
+        return residentRoomId === roomId
+          && (!targetRoomLetter || residentRoomLetter === targetRoomLetter);
+      });
+      await sendUnitMessage({
         roomId,
+        block: resolved.block,
+        unitNumber: resolved.roomNumber,
+        roomLetter: targetRoomLetter || null,
+        recipientUids: recipients.map((resident) => resident.uid),
         message: text,
+        authorId: uid,
         authorName: profile?.name || "Management",
       });
       setMessage("");
-      showToast("Shared unit update sent.", "success");
+      setTargetRoomLetter("");
+      showToast(`Message sent to ${recipients.length} resident${recipients.length === 1 ? "" : "s"}.`, "success");
       await loadAnnouncements();
     } catch (sendError) {
       console.error("[RoomProfileScreen] announcement error:", sendError);
@@ -147,15 +182,16 @@ export default function RoomProfileScreen({ navigation, route }) {
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <ScreenTitle
-        title={`Room Profile · ${resolved.label}`}
+        title={`Unit Profile · Block ${resolved.block}, Unit ${resolved.roomNumber}`}
         subtitle={`${subRooms.length} sub-rooms · ${resolved.occupiedCount}/${resolved.units.length} beds occupied`}
       />
       <ErrorNotice message={error} onRetry={load} />
 
       {/* unit-modal-summary grid */}
       <Card>
-        <KeyValue label="Room">{resolved.label}</KeyValue>
-        <KeyValue label="Sub-rooms">
+        <KeyValue label="Block">{String(resolved.block)}</KeyValue>
+        <KeyValue label="Unit Number">{String(resolved.roomNumber)}</KeyValue>
+        <KeyValue label="Room Letters">
           {`${subRooms.length} (${subRooms.map((sub) => sub.letter).join(", ")})`}
         </KeyValue>
         <KeyValue label="Bed occupancy">
@@ -198,11 +234,23 @@ export default function RoomProfileScreen({ navigation, route }) {
       </Card>
 
       {/* Message everyone in this unit */}
-      <SectionTitle>Message everyone in this unit</SectionTitle>
+      <SectionTitle>Message unit residents</SectionTitle>
       <Card>
         <Text style={styles.hint}>
-          This sends one shared update to every resident assigned to this room.
+          Choose all residents in the unit or limit the message to one room letter.
         </Text>
+        <OptionPicker
+          label="Recipients"
+          value={targetRoomLetter}
+          options={[
+            { value: "", label: "Entire unit · all room letters" },
+            { value: "A", label: "Room A" },
+            { value: "B", label: "Room B" },
+            { value: "C", label: "Room C" },
+          ]}
+          onChange={setTargetRoomLetter}
+          modalTitle="Choose message recipients"
+        />
         <TextField
           label="Shared update"
           value={message}

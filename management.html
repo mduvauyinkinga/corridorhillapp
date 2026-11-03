@@ -18,7 +18,7 @@
   <div data-nav></div>
 
   <!-- Skip to main content link -->
-  <a href="#stats-section" class="skip-link">Skip to main content</a>
+  <a href="#view-overview" class="skip-link">Skip to main content</a>
 
   <main class="container management">
     <div class="management__header">
@@ -28,64 +28,76 @@
       </div>
     </div>
 
-    <!-- Statistics cards -->
-    <section id="stats-section" class="stats" aria-label="Overview statistics">
-      <div class="stat-card">
-        <span class="stat-card__label">Total Residents</span>
-        <span class="stat-card__value" id="stat-residents">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Total Rooms</span>
-        <span class="stat-card__value" id="stat-rooms">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Occupied Rooms</span>
-        <span class="stat-card__value" id="stat-occupied">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Available Rooms</span>
-        <span class="stat-card__value" id="stat-available">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Total Complaints</span>
-        <span class="stat-card__value" id="stat-complaints">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Submitted</span>
-        <span class="stat-card__value" id="stat-submitted">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">In Progress</span>
-        <span class="stat-card__value" id="stat-inprogress">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Waiting for Parts</span>
-        <span class="stat-card__value" id="stat-waiting">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__label">Completed</span>
-        <span class="stat-card__value" id="stat-completed">—</span>
-      </div>
-    </section>
-
     <!-- Tabs -->
     <div class="tabs" role="tablist" aria-label="Management views">
-      <button id="tab-complaints" class="tabs__btn is-active" role="tab" aria-selected="true" type="button">
+      <button id="tab-overview" class="tabs__btn is-active" role="tab" aria-selected="true" type="button" aria-controls="view-overview">
+        Overview
+      </button>
+      <button id="tab-complaints" class="tabs__btn" role="tab" aria-selected="false" type="button" aria-controls="view-complaints">
         Complaints
       </button>
-      <button id="tab-residents" class="tabs__btn" role="tab" aria-selected="false" type="button">
+      <button id="tab-residents" class="tabs__btn" role="tab" aria-selected="false" type="button" aria-controls="view-residents">
         Residents
       </button>
-      <button id="tab-units" class="tabs__btn" role="tab" aria-selected="false" type="button">
+      <button id="tab-units" class="tabs__btn" role="tab" aria-selected="false" type="button" aria-controls="view-units">
         Unit Profiles
-      </button>
-      <button id="tab-occupancy" class="tabs__btn" role="tab" aria-selected="false" type="button">
-        Occupancy
       </button>
     </div>
 
+    <section id="view-overview" role="tabpanel" aria-labelledby="tab-overview">
+      <h2 class="section-title mb-2">Residence overview</h2>
+      <p class="management-overview__hint">Choose a summary to open its details.</p>
+      <div id="stats-section" class="stats management-overview__stats" aria-label="Overview statistics">
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="residents">
+          <span class="stat-card__label">Total Residents</span>
+          <span class="stat-card__value" id="stat-residents">—</span>
+          <span class="stat-card__action">View residents</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="units">
+          <span class="stat-card__label">Total Rooms</span>
+          <span class="stat-card__value" id="stat-rooms">—</span>
+          <span class="stat-card__action">View unit profiles</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="units">
+          <span class="stat-card__label">Occupied Beds</span>
+          <span class="stat-card__value" id="stat-occupied">—</span>
+          <span class="stat-card__action">View unit profiles</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="units">
+          <span class="stat-card__label">Available Beds</span>
+          <span class="stat-card__value" id="stat-available">—</span>
+          <span class="stat-card__action">View unit profiles</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="complaints">
+          <span class="stat-card__label">Total Complaints</span>
+          <span class="stat-card__value" id="stat-complaints">—</span>
+          <span class="stat-card__action">View complaints</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="complaints" data-complaint-status="Submitted">
+          <span class="stat-card__label">Submitted</span>
+          <span class="stat-card__value" id="stat-submitted">—</span>
+          <span class="stat-card__action">View submitted</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="complaints" data-complaint-status="In Progress">
+          <span class="stat-card__label">In Progress</span>
+          <span class="stat-card__value" id="stat-inprogress">—</span>
+          <span class="stat-card__action">View in progress</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="complaints" data-complaint-status="Waiting for Parts">
+          <span class="stat-card__label">Waiting for Parts</span>
+          <span class="stat-card__value" id="stat-waiting">—</span>
+          <span class="stat-card__action">View waiting complaints</span>
+        </button>
+        <button class="stat-card stat-card--action" type="button" data-dashboard-view="complaints" data-complaint-status="Completed">
+          <span class="stat-card__label">Completed</span>
+          <span class="stat-card__value" id="stat-completed">—</span>
+          <span class="stat-card__action">View completed</span>
+        </button>
+      </div>
+    </section>
+
     <!-- Complaints view -->
-    <section id="view-complaints" role="tabpanel">
+    <section id="view-complaints" class="hidden" role="tabpanel" aria-labelledby="tab-complaints">
       <!-- Search + filters -->
       <div class="toolbar">
         <div class="toolbar__search">
@@ -189,7 +201,7 @@
     </section>
 
     <!-- Residents view -->
-    <section id="view-residents" class="hidden" role="tabpanel">
+    <section id="view-residents" class="hidden" role="tabpanel" aria-labelledby="tab-residents">
       <div class="toolbar toolbar--simple">
         <div class="toolbar__search">
           <label class="form__label" for="resident-search">Search Residents</label>
@@ -213,64 +225,8 @@
       </div>
     </section>
 
-    
-
-    <!-- Occupancy view -->
-    <section id="view-occupancy" class="hidden" role="tabpanel">
-      <div class="toolbar toolbar--simple">
-        <div class="toolbar__search">
-          <label class="form__label" for="occupancy-search">Search</label>
-          <input
-            id="occupancy-search"
-            class="form__input"
-            type="search"
-            placeholder="Room, block, resident name…"
-            autocomplete="off"
-          />
-        </div>
-      </div>
-
-      <div class="toolbar__filters">
-        <div>
-          <label class="form__label" for="occupancy-block">Block</label>
-          <select id="occupancy-block" class="form__select">
-            <option value="">All blocks</option>
-            <option value="A">Block A</option>
-            <option value="B">Block B</option>
-            <option value="C">Block C</option>
-            <option value="D">Block D</option>
-            <option value="E">Block E</option>
-            <option value="F">Block F</option>
-          </select>
-        </div>
-        <div>
-          <label class="form__label" for="occupancy-floor">Floor</label>
-          <select id="occupancy-floor" class="form__select">
-            <option value="">All floors</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="occupancy-list" class="occupancy-list"></div>
-
-      <div id="occupancy-loading" class="table-loading" role="status">
-        <div class="spinner" aria-hidden="true"></div>
-        Loading occupancy…
-      </div>
-
-      <div id="occupancy-empty" class="table-empty hidden" role="status">
-        No rooms match your criteria.
-          <a href="choose-room.html" class="btn btn--ghost mt-1">Choose a Room</a>
-      </div>
-    </section>
-
     <!-- Unit Profiles view -->
-    <section id="view-units" class="hidden" role="tabpanel">
+    <section id="view-units" class="hidden" role="tabpanel" aria-labelledby="tab-units">
       <div id="units-toolbar" class="toolbar hidden">
         <div class="toolbar__search">
           <label class="form__label" for="unit-search">Search Units</label>
@@ -336,9 +292,16 @@
         </div>
 
         <div class="detail-section">
-          <h3>Message everyone in this unit</h3>
-          <p class="unit-announcement__hint">This sends one shared update to every resident assigned to this room.</p>
+          <h3>Message unit residents</h3>
+          <p class="unit-announcement__hint">Choose the whole unit or one room letter. Existing unit and room assignments are unchanged.</p>
           <form id="unit-announcement-form" class="unit-announcement__form">
+            <label class="form__label" for="unit-announcement-target">Recipients</label>
+            <select id="unit-announcement-target" class="form__select">
+              <option value="">Entire unit · all room letters</option>
+              <option value="A">Room A</option>
+              <option value="B">Room B</option>
+              <option value="C">Room C</option>
+            </select>
             <textarea id="unit-announcement-input" aria-label="Message for this unit" rows="3" maxlength="500" required placeholder="For example: Please clean the shared kitchen today."></textarea>
             <button id="unit-announcement-submit" type="submit" class="btn btn--primary btn--sm">Send update</button>
           </form>

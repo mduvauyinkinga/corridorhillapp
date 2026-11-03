@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   emptyBox: {
     padding: spacing.lg,
     borderRadius: radius.sm,
-    backgroundColor: "#f4f6f9",
+    backgroundColor: colors.surface,
   },
   emptyText: { color: colors.textMuted, fontSize: typography.small },
   thumbRow: { gap: spacing.sm, paddingVertical: spacing.xs },
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  thumb: { width: 96, height: 96, backgroundColor: "#eef1f5" },
+  thumb: { width: 96, height: 96, backgroundColor: colors.border },
   viewer: { flex: 1, backgroundColor: "rgba(13, 42, 66, 0.96)" },
   viewerHeader: {
     flexDirection: "row",
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
   },
-  counter: { color: "#ffffff", fontWeight: "600", fontSize: typography.small },
+  counter: { color: colors.white, fontWeight: "600", fontSize: typography.small },
   close: { color: colors.accent, fontWeight: "700", fontSize: typography.body },
   fullImage: { flex: 1, width: "100%" },
   viewerFooter: {
@@ -152,5 +152,5 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.4)",
     alignItems: "center",
   },
-  navText: { color: "#ffffff", fontWeight: "700" },
+  navText: { color: colors.white, fontWeight: "700" },
 });

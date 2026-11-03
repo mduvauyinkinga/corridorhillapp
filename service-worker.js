@@ -15,7 +15,7 @@
  * when the network is unavailable.
  */
 
-const STATIC_CACHE = "corridor-hill-static-v2";
+const STATIC_CACHE = "corridor-hill-static-v5";
 const OFFLINE_URL = "./offline.html";
 
 // Static assets to cache on install. These are all public, non-sensitive resources.
@@ -56,6 +56,7 @@ const STATIC_ASSETS = [
   "./js/reset-password.js",
   "./js/choose-room.js",
   "./js/dashboard.js",
+  "./js/unit-messages.js",
   "./js/complaints.js",
   "./js/timeline.js",
   "./js/tracking.js",

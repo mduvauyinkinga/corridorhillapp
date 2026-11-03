@@ -34,7 +34,7 @@ import { colors, radius, spacing, typography } from "../../theme";
 import { getFirebaseErrorMessage } from "../../utils/errors";
 import { BLOCKS, groupSlotsByLetter } from "../../utils/rooms";
 
-const STEP_LABELS = ["Block", "Unit number", "Room", "Confirm"];
+const STEP_LABELS = ["Block", "Unit Number", "Room Letter", "Confirm"];
 
 export default function ChooseRoomScreen() {
   const { uid, refreshProfile } = useAuth();
@@ -156,8 +156,8 @@ export default function ChooseRoomScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <SectionTitle>Choose your room</SectionTitle>
-      <Text style={styles.subtitle}>Select a block, then a room number, then A, B or C.</Text>
+      <SectionTitle>Choose your location</SectionTitle>
+      <Text style={styles.subtitle}>Select a block, unit number and room letter.</Text>
 
       <View style={styles.progress}>
         {STEP_LABELS.map((label, index) => {
@@ -201,19 +201,19 @@ export default function ChooseRoomScreen() {
         />
 
         <OptionPicker
-          label="Step 2 · Room number"
+          label="Step 2 · Unit Number"
           required
           value={roomId}
           options={roomOptions}
           onChange={handleRoomChange}
-          placeholder={block ? "Select a room…" : "Select a block first…"}
+          placeholder={block ? "Select a unit number…" : "Select a block first…"}
           disabled={!block || loading}
-          modalTitle="Choose a room number"
+          modalTitle="Choose a unit number"
         />
 
         {loading ? <LoadingState message="Loading rooms…" /> : null}
 
-        <Text style={styles.stepLabel}>Step 3 · Choose your room (A, B or C)</Text>
+        <Text style={styles.stepLabel}>Step 3 · Choose your room letter (A, B or C)</Text>
         {!roomId ? (
           <Text style={styles.hint}>Select a unit number first.</Text>
         ) : letters.length === 0 ? (
@@ -265,12 +265,12 @@ export default function ChooseRoomScreen() {
         <Card>
           <Text style={styles.summaryLabel}>Your selection</Text>
           <Text style={styles.summaryValue}>
-            {`Block ${block} · Room ${
+            {`Block ${block} · Unit Number ${
               rooms.find((room) => room.id === roomId)?.roomNumber || "—"
-            } · Room ${selectedLetter}`}
+            } · Room Letter ${selectedLetter}`}
           </Text>
           <Button
-            title="Confirm Room"
+            title="Confirm Location"
             fullWidth
             loading={confirming}
             loadingText="Confirming…"
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     gap: spacing.md,
   },
-  letterOptionSelected: { borderColor: colors.primary, backgroundColor: "#eef3f8" },
-  letterOptionDisabled: { backgroundColor: "#f4f6f9", opacity: 0.7 },
+  letterOptionSelected: { borderColor: colors.primary, backgroundColor: colors.border },
+  letterOptionDisabled: { backgroundColor: colors.surface, opacity: 0.7 },
   letterOptionPressed: { opacity: 0.85 },
   radio: {
     width: 20,

@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 3,
   },
-  roleText: { color: "#ffffff", fontWeight: "700", fontSize: typography.tiny },
+  roleText: { color: colors.white, fontWeight: "700", fontSize: typography.tiny },
   supportText: { color: colors.textMuted, fontSize: typography.small },
   supportEmail: {
     marginTop: spacing.xs,

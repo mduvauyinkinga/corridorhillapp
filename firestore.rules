@@ -82,6 +82,44 @@ service cloud.firestore {
       allow delete: if isManagement();
     }
 
+    // Per-user inbox copies reveal only the signed-in resident's messages.
+    match /users/{uid}/unitInbox/{messageId} {
+      allow read: if isManagement() || (signedIn() && request.auth.uid == uid);
+      allow create: if isManagement()
+        && existsAfter(/databases/$(database)/documents/unitMessages/$(messageId))
+        && uid in getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.recipientUids
+        && request.resource.data.keys().hasOnly([
+          'messageId', 'roomId', 'block', 'unitNumber', 'roomLetter', 'message',
+          'authorId', 'authorName', 'createdAt'
+        ])
+        && request.resource.data.messageId == messageId
+        && request.resource.data.roomId == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.roomId
+        && request.resource.data.block == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.block
+        && request.resource.data.unitNumber == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.unitNumber
+        && request.resource.data.roomLetter == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.roomLetter
+        && request.resource.data.message == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.message
+        && request.resource.data.authorId == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.authorId
+        && request.resource.data.authorName == getAfter(
+          /databases/$(database)/documents/unitMessages/$(messageId)
+        ).data.authorName
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
     // Rooms: readable by all signed-in users; written only by management.
     match /rooms/{roomId} {
       allow read: if signedIn();
@@ -125,26 +163,87 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // New broadcasts snapshot their audience so whole-unit and room-letter
+    // messages have explicit, enforceable recipients. Legacy announcements
+    // remain in unitAnnouncements and keep their original room-wide scope.
+    match /unitMessages/{messageId} {
+      allow read: if isManagement();
+      allow create: if isManagement()
+        && request.resource.data.keys().hasOnly([
+          'roomId', 'block', 'unitNumber', 'roomLetter', 'recipientUids',
+          'message', 'authorId', 'authorName', 'createdAt'
+        ])
+        && request.resource.data.roomId is string
+        && request.resource.data.block in ['A', 'B', 'C', 'D', 'E', 'F']
+        && request.resource.data.unitNumber is int
+        && request.resource.data.unitNumber >= 101
+        && request.resource.data.unitNumber <= 513
+        && get(/databases/$(database)/documents/rooms/$(request.resource.data.roomId)).data.block
+          == request.resource.data.block
+        && get(/databases/$(database)/documents/rooms/$(request.resource.data.roomId)).data.roomNumber
+          == request.resource.data.unitNumber
+        && (request.resource.data.roomLetter == null
+          || request.resource.data.roomLetter in ['A', 'B', 'C'])
+        && request.resource.data.recipientUids is list
+        && request.resource.data.recipientUids.size() > 0
+        && request.resource.data.recipientUids.size() <= 6
+        && request.resource.data.recipientUids.all(recipientUid,
+          recipientUid is string && recipientUid.size() > 0)
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 500
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.authorName is string
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
     // Complaints: residents can create and read their own; management can
     // read all and update status.
     match /complaints/{complaintId} {
       allow read: if signedIn()
         && (request.auth.uid == resource.data.residentId || isManagement());
       allow create: if isResident()
+        && request.resource.data.keys().hasOnly([
+          'residentId', 'roomId', 'unitId', 'issues', 'category', 'priority',
+          'photoURLs', 'notes', 'status', 'createdAt', 'updatedAt'
+        ])
         && request.resource.data.residentId == request.auth.uid
+        && request.resource.data.roomId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roomId
+        && request.resource.data.unitId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.unitId
+        && get(/databases/$(database)/documents/units/$(request.resource.data.unitId)).data.roomId
+          == request.resource.data.roomId
+        && get(/databases/$(database)/documents/units/$(request.resource.data.unitId)).data.occupied == true
+        && get(/databases/$(database)/documents/units/$(request.resource.data.unitId)).data.residentId == request.auth.uid
+        && isValidStatus(request.resource.data.status)
+        && request.resource.data.status == 'Submitted'
         && isValidCategory(request.resource.data.category)
         && isValidIssues(request.resource.data.issues)
         && isValidPriority(request.resource.data.priority);
       allow update: if isManagement()
         || (
-          // Residents may edit their own complaint while the status stays
-          // the same (e.g. changing category/issues/notes on a draft).
+          // Residents may edit only complaint details in early workflow states.
           isResident()
           && request.auth.uid == resource.data.residentId
+          && resource.data.status in ['Pending', 'Submitted', 'Received']
           && request.resource.data.status == resource.data.status
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['category', 'issues', 'notes', 'updatedAt'])
           && isValidCategory(request.resource.data.category)
           && isValidIssues(request.resource.data.issues)
           && isValidPriority(request.resource.data.priority)
+        )
+        || (
+          // Reopen requests may change only the request fields and timestamp.
+          isResident()
+          && request.auth.uid == resource.data.residentId
+          && resource.data.status == 'Completed'
+          && resource.data.reopenRequested != true
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.reopenRequested == true
+          && request.resource.data.reopenStatus == 'Pending'
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['reopenRequested', 'reopenStatus', 'updatedAt'])
         )
         || (
           // Residents may CANCEL their own complaint ONLY from the
@@ -155,7 +254,7 @@ service cloud.firestore {
           // issues, etc., or jumping from a further-along workflow state.
           isResident()
           && request.auth.uid == resource.data.residentId
-          && (resource.data.status == 'Submitted' || resource.data.status == 'Received')
+          && (resource.data.status in ['Pending', 'Submitted', 'Received'])
           && request.resource.data.status == 'Cancelled'
           && request.resource.data.diff(resource.data)
               .affectedKeys()
@@ -169,8 +268,7 @@ service cloud.firestore {
       match /maintenanceNotes/{noteId} {
         allow read: if signedIn()
           && (isManagement()
-              || (request.auth.uid
-                  && get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid));
+              || get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid);
         allow create: if isManagement();
         allow update: if isManagement();
         allow delete: if false;
@@ -182,13 +280,23 @@ service cloud.firestore {
       match /timeline/{eventId} {
         allow read: if signedIn()
           && (isManagement()
-              || (request.auth.uid
-                  && get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid));
-        allow create: if signedIn()
-          && (isManagement()
-              || (request.auth.uid
-                  && get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid));
-        allow update: if isManagement();
+              || get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid);
+        allow create: if request.resource.data.keys().hasOnly([
+            'action', 'description', 'authorId', 'authorName', 'authorRole', 'createdAt'
+          ])
+          && request.resource.data.action is string
+          && request.resource.data.description is string
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.authorName is string
+          && request.resource.data.createdAt == request.time
+          && ((isManagement() && request.resource.data.authorRole == 'management')
+            || (isResident()
+              && get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid
+              && request.resource.data.authorRole == 'resident'
+              && request.resource.data.action in [
+                'Complaint Submitted', 'Complaint Edited', 'Complaint Cancelled'
+              ]));
+        allow update: if false;
         allow delete: if false;
       }
     }

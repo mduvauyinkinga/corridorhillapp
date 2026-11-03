@@ -4,6 +4,8 @@
    ============================================================ */
 
 :root {
+  color-scheme: light;
+
   /* Brand palette */
   --color-primary: #143c5c;      /* deep navy */
   --color-primary-dark: #0d2a42;
@@ -11,7 +13,7 @@
   --color-accent-dark: #c9871f;
 
   /* Neutrals - Light mode */
-  --color-bg: #f4f6f9;
+  --color-bg: #ffffff;
   --color-surface: #ffffff;
   --color-text: #22303c;
   --color-text-muted: #5c6b7a;
@@ -42,26 +44,6 @@
   --container-max: 1100px;
 }
 
-/* Dark mode - automatically activated via prefers-color-scheme */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #1a202c;
-    --color-surface: #2d3748;
-    --color-text: #e2e8f0;
-    --color-text-muted: #a0aec0;
-    --color-border: #4a5568;
-  }
-}
-
-/* Optional: manually set dark mode via data attribute */
-[data-theme="dark"] {
-  --color-bg: #1a202c;
-  --color-surface: #2d3748;
-  --color-text: #e2e8f0;
-  --color-text-muted: #a0aec0;
-  --color-border: #4a5568;
-}
-
 /* ---------- Reset ---------- */
 *,
 *::before,
@@ -78,7 +60,7 @@ html {
 body {
   font-family: var(--font-base);
   color: var(--color-text);
-  background: var(--color-bg);
+  background: #ffffff;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }

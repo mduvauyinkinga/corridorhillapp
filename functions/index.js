@@ -1,8 +1,7 @@
 /**
- * Releases every bed assigned to a resident whose Firestore profile is
- * deleted. Deploy this with Firebase Functions so deletes made in the
- * Firestore console are reflected in availability without opening the
- * management dashboard.
+ * Removes resident inbox copies and releases every bed assigned to a
+ * resident whose Firestore profile is deleted. Deploy this with Firebase
+ * Functions so console deletes clean up dependent data automatically.
  */
 const { onDocumentDeleted } = require("firebase-functions/v2/firestore");
 const { initializeApp } = require("firebase-admin/app");
@@ -15,6 +14,10 @@ exports.releaseUnitsForDeletedResident = onDocumentDeleted(
   async (event) => {
     const uid = event.params.uid;
     const db = getFirestore();
+
+    await db.recursiveDelete(
+      db.collection("users").doc(uid).collection("unitInbox")
+    );
 
     // Query by residentId instead of relying only on the profile's unitId:
     // this also repairs older profiles that were missing that field.

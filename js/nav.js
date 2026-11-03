@@ -19,7 +19,6 @@ const NAV_ITEMS = {
   ],
   management: [
     { label: "Management", href: "management.html" },
-    { label: "House Rules", href: "rules.html" },
   ],
 };
 
@@ -90,6 +89,7 @@ const logoutLi = document.createElement("li");
     logout();
   });
   logoutLi.appendChild(logoutBtn);
+
   list.appendChild(logoutLi);
 
   menu.appendChild(list);
@@ -99,7 +99,8 @@ const logoutLi = document.createElement("li");
   mount.appendChild(nav);
 
   // Mobile toggle behavior.
-  toggle.addEventListener("click", () => {
+  toggle.addEventListener("click", () => 
+    {
     const expanded = toggle.getAttribute("aria-expanded") === "true";
     toggle.setAttribute("aria-expanded", String(!expanded));
     menu.classList.toggle("is-open");
