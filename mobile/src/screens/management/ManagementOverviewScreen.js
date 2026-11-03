@@ -131,14 +131,14 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.lg,
-    marginTop: spacing.lg,
+    gap: spacing.md,
+    marginTop: spacing.md,
   },
   tile: {
     flex: 1,
     minWidth: "47%",
-    minHeight: 196,
-    padding: spacing.lg,
+    minHeight: 160,
+    padding: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   tileValue: {
     color: colors.primary,
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: "700",
   },
   tileDetail: {
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   tileLink: {
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
     color: colors.primary,
     fontSize: typography.body,
     fontWeight: "700",
