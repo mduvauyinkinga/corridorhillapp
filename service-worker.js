@@ -15,7 +15,7 @@
  * when the network is unavailable.
  */
 
-const STATIC_CACHE = "corridor-hill-static-v5";
+const STATIC_CACHE = "corridor-hill-static-v6";
 const OFFLINE_URL = "./offline.html";
 
 // Static assets to cache on install. These are all public, non-sensitive resources.
@@ -35,7 +35,6 @@ const STATIC_ASSETS = [
   "./offline.html",
   "./404.html",
   "./manifest.webmanifest",
-  "./favicon.svg",
   "./assets/images/corridor-logo.jpeg",
   "./assets/images/corridor-hill.jpeg",
   "./assets/images/corridorhill.jpg",
