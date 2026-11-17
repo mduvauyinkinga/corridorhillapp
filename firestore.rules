@@ -50,8 +50,33 @@ service cloud.firestore {
     function isValidIssues(issues) {
       return issues is list
         && issues.size() > 0
-        && issues.size() <= 20
-        && issues.all(i, i is string && i.size() > 0 && i.size() <= 100);
+        && issues.size() <= 9
+        && issues.hasOnly([
+          'Toilet light', 'Stove', 'Fridge', 'Door', 'Window', 'Shower',
+          'Water leak', 'Electrical', 'Other'
+        ])
+        && issues.toSet().size() == issues.size();
+    }
+
+    // Firestore Rules has no list-wide `all` operator; validate each allowed
+    // recipient slot explicitly, bounded by the maximum audience size.
+    function isValidRecipientUids(recipients) {
+      return recipients is list
+        && recipients.size() > 0
+        && recipients.size() <= 6
+        && recipients.toSet().size() == recipients.size()
+        && recipients[0] is string
+        && recipients[0].size() > 0
+        && (recipients.size() < 2
+          || (recipients[1] is string && recipients[1].size() > 0))
+        && (recipients.size() < 3
+          || (recipients[2] is string && recipients[2].size() > 0))
+        && (recipients.size() < 4
+          || (recipients[3] is string && recipients[3].size() > 0))
+        && (recipients.size() < 5
+          || (recipients[4] is string && recipients[4].size() > 0))
+        && (recipients.size() < 6
+          || (recipients[5] is string && recipients[5].size() > 0));
     }
 
     // Users: users can read/write their own doc; management can read/write all.
@@ -184,11 +209,7 @@ service cloud.firestore {
           == request.resource.data.unitNumber
         && (request.resource.data.roomLetter == null
           || request.resource.data.roomLetter in ['A', 'B', 'C'])
-        && request.resource.data.recipientUids is list
-        && request.resource.data.recipientUids.size() > 0
-        && request.resource.data.recipientUids.size() <= 6
-        && request.resource.data.recipientUids.all(recipientUid,
-          recipientUid is string && recipientUid.size() > 0)
+        && isValidRecipientUids(request.resource.data.recipientUids)
         && request.resource.data.message is string
         && request.resource.data.message.size() > 0
         && request.resource.data.message.size() <= 500

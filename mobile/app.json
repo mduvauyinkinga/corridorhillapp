@@ -30,7 +30,10 @@
       "expo-font"
     ],
     "extra": {
-      "firebaseProjectId": "corridormaintenanceapp"
+      "firebaseProjectId": "corridormaintenanceapp",
+      "eas": {
+        "projectId": "d55a40c4-66fc-4375-86d2-a0f05fbb2211"
+      }
     }
   }
 }
