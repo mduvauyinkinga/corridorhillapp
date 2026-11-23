@@ -48,7 +48,7 @@
 }
 
 .data-table thead th {
-  background: var(--color-primary);
+  background: var(--color-header);
   color: #fff;
   font-weight: 600;
   font-size: 0.82rem;
@@ -63,7 +63,7 @@
 }
 
 .data-table tbody tr:hover {
-  background: #f7fafc;
+  background: var(--color-soft);
 }
 
 .data-table__resident {
@@ -144,7 +144,7 @@
   position: absolute;
   top: -100px;
   left: 0;
-  background: var(--color-primary);
+  background: var(--color-btn-primary);
   color: white;
   padding: 8px;
   z-index: 100;
@@ -403,7 +403,7 @@
 
 .modal__panel {
   position: relative;
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-2);
   width: 100%;
@@ -504,7 +504,7 @@ body.modal-open {
 }
 
 .note-item {
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-left: 3px solid var(--color-accent);
   border-radius: var(--radius);
   padding: var(--space-2);
@@ -623,7 +623,7 @@ body.modal-open {
 }
 
 .timeline-item__content {
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-radius: var(--radius);
   padding: var(--space-2);
 }
@@ -659,7 +659,7 @@ body.modal-open {
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--color-border);
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .photo-gallery__item img {
@@ -832,7 +832,7 @@ body.modal-open {
   gap: 0.4rem;
   padding: 0.5rem 0.9rem;
   border-radius: var(--radius);
-  background: var(--color-primary);
+  background: var(--color-btn-primary);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 600;
@@ -840,7 +840,7 @@ body.modal-open {
 }
 
 .block-card:hover .block-card__cta {
-  background: var(--color-primary-dark);
+  background: var(--color-btn-primary-dark);
 }
 
 .block-card__cta::after {
@@ -937,7 +937,7 @@ body.modal-open {
   gap: 0.4rem;
   padding: 0.3rem 0.55rem;
   border-radius: var(--radius);
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .unit-card__resident-name {
@@ -988,7 +988,7 @@ body.modal-open {
 
 .unit-announcement__form { display: grid; gap: var(--space-2); }
 .unit-announcement__form textarea { min-height: 5rem; resize: vertical; }
-.unit-announcement { background: var(--color-bg); border-left: 3px solid var(--color-primary); border-radius: var(--radius); padding: var(--space-2); }
+.unit-announcement { background: var(--color-surface); border-left: 3px solid var(--color-primary); border-radius: var(--radius); padding: var(--space-2); }
 
 .unit-resident {
   display: flex;
@@ -996,7 +996,7 @@ body.modal-open {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-left: 3px solid var(--color-primary);
   border-radius: var(--radius);
   padding: var(--space-2);
@@ -1013,7 +1013,7 @@ body.modal-open {
 }
 
 .unit-complaint {
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-left: 3px solid var(--color-accent);
   border-radius: var(--radius);
   padding: var(--space-2);
@@ -1048,7 +1048,7 @@ body.modal-open {
 
 /* ---------- Dashboard complaint lists ---------- */
 .complaint-card {
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-left: 3px solid var(--color-accent);
   border-radius: var(--radius);
   padding: var(--space-2);

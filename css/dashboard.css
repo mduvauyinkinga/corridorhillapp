@@ -28,7 +28,8 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-1);
   margin-bottom: var(--space-3);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease,
+    background-color 0.3s ease, color 0.3s ease;
 }
 
 .dashboard-disclosure:hover {
@@ -162,7 +163,8 @@
   box-shadow: var(--shadow-1);
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-    box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow 0.25s ease, border-color 0.25s ease,
+    background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Gradient accent border on hover. */
@@ -200,7 +202,7 @@
   width: 48px;
   height: 48px;
   border-radius: var(--radius);
-  background: #eef4fb;
+  background: var(--color-soft);
   color: var(--color-primary);
   margin-bottom: var(--space-1);
   transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
@@ -208,7 +210,7 @@
 }
 
 .rule-card:hover .rule-card__icon {
-  background: var(--color-primary);
+  background: var(--color-btn-primary);
   color: #fff;
   transform: scale(1.1);
 }
@@ -276,7 +278,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.3s ease, color 0.3s ease;
 }
 
 .action-card:hover {
@@ -292,7 +295,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef4fb;
+  background: var(--color-soft);
   color: var(--color-primary);
 }
 
@@ -339,7 +342,7 @@
   position: absolute;
   top: -100px;
   left: 0;
-  background: var(--color-primary);
+  background: var(--color-btn-primary);
   color: white;
   padding: 8px;
   z-index: 100;

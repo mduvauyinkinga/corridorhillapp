@@ -6,6 +6,20 @@
   <meta name="description" content="Submit a maintenance complaint at Corridor Hill Residence." />
   <meta name="theme-color" content="#143c5c" />
   <title>Submit Complaint | Corridor Hill</title>
+  <script>
+    // Apply the saved theme before first paint so there is no flash.
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        document.documentElement.setAttribute(
+          "data-theme",
+          t === "dark" ? "dark" : "light"
+        );
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/jpeg" href="assets/images/corridor-logo.jpeg" />
   <link rel="apple-touch-icon" href="assets/images/corridor-logo.jpeg" />
   <link rel="manifest" href="manifest.webmanifest" />

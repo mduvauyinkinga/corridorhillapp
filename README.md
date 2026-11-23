@@ -315,28 +315,8 @@ same Firebase backend.
 ```bash
 cd mobile
 npm install
-npm start
+npx expo start
 ```
-
-### Connect the mobile app to the new Expo project
-
-The mobile app is linked to the new EAS project
-`d55a40c4-66fc-4375-86d2-a0f05fbb2211` in `mobile/app.json`. From a terminal,
-run:
-
-```bash
-cd mobile
-npm install
-npm install --global eas-cli
-eas login
-npx expo-doctor
-npm start
-```
-
-Scan the QR code with Expo Go to run the app on a device. To create an Android
-APK with EAS, run `eas build --platform android --profile preview` from
-`mobile/` after logging in. EAS may ask you to configure Android signing
-credentials on the first build.
 
 ---
 
