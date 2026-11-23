@@ -1,0 +1,7 @@
+# Corridor Hill Residence Maintenance System
+# Private student-residence tool. Keep admin/utility pages out of public search results.
+User-agent: *
+Disallow: /management.html
+Disallow: /seed-tool.html
+# Note: robots paths are root-relative per spec. This is NOT security —
+# Firebase Security Rules remain the enforcement layer.

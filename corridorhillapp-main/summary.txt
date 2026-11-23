@@ -1,0 +1,13 @@
+## Summary
+
+Successfully implemented the "Unit Alerts" feature for the Corridor Maintenance App. Changed the display label from "Shared unit update" to "Unit Alerts" in:
+
+1. `js/dashboard.js` (web dashboard) - line 243
+2. `mobile/src/screens/resident/DashboardScreen.js` (mobile dashboard) - lines 15 and 197
+
+The existing unit announcement infrastructure was already in place:
+- Managers can send messages to units via the unit profiles tab → unit modal → "Message everyone in this unit" form
+- Messages are stored in Firestore `unitAnnouncements` collection  
+- Residents see the alerts in their dashboard under "Latest maintenance update"
+
+When a manager sends a message to unit f506 (or any unit), all residents in that unit will now see the message displayed as "Unit Alerts" in their resident dashboard under the latest maintenance update card.
