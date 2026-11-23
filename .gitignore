@@ -30,3 +30,6 @@ Thumbs.db
 .env.*
 *.key.json
 serviceAccount*.json
+
+# Nested duplicate of the repo — do not track the folder copy of itself
+corridorhillapp-main/
