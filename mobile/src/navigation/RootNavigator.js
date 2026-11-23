@@ -22,9 +22,11 @@ import React from "react";
 
 import { AUTH_STATUS, useAuth } from "../context/AuthContext";
 import ChooseRoomScreen from "../screens/auth/ChooseRoomScreen";
+import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 import LandingScreen from "../screens/auth/LandingScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
+import ResetPasswordScreen from "../screens/auth/ResetPasswordScreen";
 import ProfileScreen from "../screens/shared/ProfileScreen";
 import SplashScreen from "../screens/shared/SplashScreen";
 import { navigationTheme, screenOptions } from "./navTheme";
@@ -47,6 +49,16 @@ function AuthStack() {
         name="Register"
         component={RegisterScreen}
         options={{ title: "Create Account" }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{ title: "Forgot Password" }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPasswordScreen}
+        options={{ title: "Reset Password" }}
       />
     </Stack.Navigator>
   );

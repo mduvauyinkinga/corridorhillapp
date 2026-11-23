@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Corridor Hill",
-    "slug": "corridor-maintenence-app",
+    "slug": "corridor-maintenance-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -30,10 +30,7 @@
       "expo-font"
     ],
     "extra": {
-      "firebaseProjectId": "corridormaintenanceapp",
-      "eas": {
-        "projectId": "d55a40c4-66fc-4375-86d2-a0f05fbb2211"
-      }
+      "firebaseProjectId": "corridormaintenanceapp"
     }
   }
 }
