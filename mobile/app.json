@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Corridor Hill",
-    "slug": "corridor-maintenance-mobile",
+    "slug": "corridor-maintenance-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -13,8 +13,7 @@
     "android": {
       "package": "za.ac.tut.corridormaintenance",
       "permissions": [
-        "android.permission.INTERNET",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.INTERNET"
       ]
     },
     "ios": {
@@ -33,7 +32,7 @@
     "extra": {
       "firebaseProjectId": "corridormaintenanceapp",
       "eas": {
-        "projectId": "51f71dcf-f535-4019-a6b5-3bceda408399"
+        "projectId": "d55a40c4-66fc-4375-86d2-a0f05fbb2211"
       }
     }
   }
