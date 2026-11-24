@@ -20,7 +20,7 @@ import {
   orderBy,
   updateDoc,
   serverTimestamp,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 import { requireRole } from "./auth.js";
 import { renderNav } from "./nav.js";
 import { loadTimeline, renderTimeline, addTimelineEvent } from "./timeline.js";

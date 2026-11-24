@@ -11,7 +11,7 @@
 import { auth } from "./firebase.js";
 import {
   sendPasswordResetEmail,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 import {
   $,
   setButtonLoading,

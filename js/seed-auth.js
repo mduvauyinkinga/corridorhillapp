@@ -17,8 +17,8 @@
  */
 
 import { auth, db } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+import { getDoc, doc } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 /**
  * Resolve the currently signed-in Auth user (or null).

@@ -11,7 +11,8 @@ Backend services: **Firebase Authentication** and **Cloud Firestore**.
 ## Tech Stack
 
 - HTML5, CSS3, Vanilla JS (ES6 Modules) — no frameworks, no build tools.
-- Firebase v10+ Modular SDK (loaded via CDN in `js/firebase.js`).
+- Firebase v13.4.0 Modular SDK (loaded via CDN in `js/firebase.js` and shared
+  by the mobile app).
 - Hosted on **GitHub Pages**.
 
 ---
@@ -62,6 +63,15 @@ const firebaseConfig = {
 Copy the contents of `firestore.rules` into:
 Firebase Console → **Firestore Database** → **Rules** tab → Publish.
 
+Or, from the project root after selecting the correct Firebase project, run:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+Static hosting (including GitHub Pages) does not publish Firestore rules; deploy
+them separately whenever the local `firestore.rules` changes.
+
 Also create the composite indexes listed in `firestore.indexes.json` if prompted.
 
 Publish `storage.rules` separately in the Firebase Storage Rules tab.
@@ -76,7 +86,7 @@ deploy the included Cloud Function once. It also deletes that resident's
 
 ```powershell
 firebase use <your-firebase-project-id>
-npm --prefix functions install
+npm --prefix functions ci
 firebase deploy --only functions:releaseUnitsForDeletedResident
 ```
 

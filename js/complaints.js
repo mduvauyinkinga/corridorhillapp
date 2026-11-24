@@ -20,7 +20,7 @@ import {
   getDoc,
   doc,
   serverTimestamp,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 import { requireRole } from "./auth.js";
 import { renderNav } from "./nav.js";
 import { addTimelineEvent } from "./timeline.js";
@@ -180,15 +180,38 @@ form.addEventListener("submit", async (event) => {
   }
 
   const restore = setButtonLoading(submitBtn, "Submitting…");
+  let submissionStage = "loading your profile";
 
   try {
     // Load profile for roomId/unitId (fresh).
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profile = profileSnap.exists() ? profileSnap.data() : null;
+    if (!profile || profile.role !== "resident") {
+      throw new Error("Your resident profile could not be verified.");
+    }
+    if (!profile.roomId || !profile.unitId) {
+      throw new Error("You must choose a room before submitting a complaint.");
+    }
+
+    const unitSnap = await getDoc(doc(db, "units", profile.unitId));
+    if (!unitSnap.exists()) {
+      throw new Error("Your assigned unit could not be found.");
+    }
+    const unit = unitSnap.data();
+    if (
+      unit.occupied !== true
+      || unit.residentId !== user.uid
+      || unit.roomId !== profile.roomId
+    ) {
+      throw new Error(
+        "Your room assignment is no longer valid. Please reopen the room selection page."
+      );
+    }
 
     // Upload photos first (if any) so we can store download URLs.
     const photoURLs = [];
     if (selectedFiles.length > 0) {
+      submissionStage = "uploading complaint photos";
       uploadProgress.hidden = false;
       uploadProgress.textContent = "Uploading photos… 0%";
 
@@ -214,18 +237,31 @@ form.addEventListener("submit", async (event) => {
       updatedAt: serverTimestamp(),
     };
 
+    submissionStage = "saving the complaint";
     const complaintRef = await addDoc(collection(db, "complaints"), newComplaint);
 
     // Record the initial timeline event.
-    await addTimelineEvent(complaintRef.id, {
-      action: "Complaint Submitted",
-      description: `Category: ${category}. Issues: ${selectedIssues.join(", ")}`,
-      authorId: user.uid,
-      authorName: profile?.name || "Resident",
-      authorRole: "resident",
-    });
+    submissionStage = "saving the complaint timeline";
+    let timelineSaved = true;
+    try {
+      await addTimelineEvent(complaintRef.id, {
+        action: "Complaint Submitted",
+        description: `Category: ${category}. Issues: ${selectedIssues.join(", ")}`,
+        authorId: user.uid,
+        authorName: profile?.name || "Resident",
+        authorRole: "resident",
+      });
+    } catch (timelineError) {
+      timelineSaved = false;
+      console.error("[complaints] timeline event error:", timelineError);
+    }
 
-    toast("Complaint submitted successfully!", "success");
+    toast(
+      timelineSaved
+        ? "Complaint submitted successfully!"
+        : "Complaint submitted, but the timeline event could not be saved.",
+      timelineSaved ? "success" : "info"
+    );
     form.reset();
     selectedFiles = [];
     photoPreview.innerHTML = "";
@@ -234,8 +270,14 @@ form.addEventListener("submit", async (event) => {
       window.location.href = "tracking.html";
     }, 800);
   } catch (error) {
-    console.error("[complaints] submit error:", error);
-    showError(getFirebaseErrorMessage(error));
+    console.error(`[complaints] ${submissionStage} error:`, error);
+    if (error?.code === "permission-denied") {
+      showError(
+        "Firebase denied this step. Publish the latest Firestore rules, and verify your room assignment is linked to your resident account."
+      );
+    } else {
+      showError(getFirebaseErrorMessage(error));
+    }
     restore();
   }
 });

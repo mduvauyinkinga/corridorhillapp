@@ -15,7 +15,7 @@ import { auth } from "./firebase.js";
 import {
   verifyPasswordResetCode,
   confirmPasswordReset,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 import {
   $,
   setButtonLoading,
@@ -23,6 +23,7 @@ import {
   focusFirstError,
   showError,
   clearError,
+  initPasswordStrength,
   initPasswordToggles,
 } from "./utils.js";
 

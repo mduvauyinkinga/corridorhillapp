@@ -11,7 +11,7 @@ import {
   getDocs,
   serverTimestamp,
   writeBatch,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const BATCH_LIMIT = 450;
 

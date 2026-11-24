@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   where,
   writeBatch,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 import { db } from "./firebase.js";
 
 const MAX_MESSAGE_LENGTH = 500;

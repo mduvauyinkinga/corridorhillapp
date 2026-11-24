@@ -11,8 +11,8 @@
  */
 
 import { auth, db, ALLOWED_DOMAIN } from "./firebase.js";
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 import {
   validateRequired,
   validateEmailDomain,
@@ -30,6 +30,7 @@ import {
 const form = $("#register-form");
 const submitBtn = $("#register-btn");
 const passwordInput = $("#password");
+const confirmInput = $("#confirm-password");
 const strengthContainer = $("#password-strength");
 
 /**
@@ -42,8 +43,6 @@ function validateForm(data) {
   const studentInput = $("#student-number");
   const emailInput = $("#email");
   const passwordInput = $("#password");
-  const confirmInput = $("#confirm-password");
-
   // Full name
   if (!validateRequired(nameInput, "Full name")) valid = false;
 

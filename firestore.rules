@@ -54,6 +54,12 @@ service cloud.firestore {
         && issues.all(i, i is string && i.size() > 0 && i.size() <= 100);
     }
 
+    function isTutEmail() {
+      return signedIn()
+        && request.auth.token.email is string
+        && request.auth.token.email.matches('^[^@]+@tut4life[.]ac[.]za$');
+    }
+
     // Users: users can read/write their own doc; management can read/write all.
     // Residents may only manage their own doc and must keep role "resident".
     // Management may manage any user doc but must still use a valid role.
@@ -62,6 +68,7 @@ service cloud.firestore {
         && (request.auth.uid == uid || isManagement());
       allow create: if signedIn()
         && request.auth.uid == uid
+        && isTutEmail()
         && request.resource.data.uid == uid
         && request.resource.data.role == 'resident'
         && request.resource.data.roomId == null
@@ -211,10 +218,20 @@ service cloud.firestore {
         && request.resource.data.residentId == request.auth.uid
         && request.resource.data.roomId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roomId
         && request.resource.data.unitId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.unitId
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roomId is string
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.unitId is string
         && get(/databases/$(database)/documents/units/$(request.resource.data.unitId)).data.roomId
           == request.resource.data.roomId
         && get(/databases/$(database)/documents/units/$(request.resource.data.unitId)).data.occupied == true
         && get(/databases/$(database)/documents/units/$(request.resource.data.unitId)).data.residentId == request.auth.uid
+        && request.resource.data.issues is list
+        && request.resource.data.photoURLs is list
+        && request.resource.data.photoURLs.size() <= 10
+        && request.resource.data.photoURLs.all(url, url is string)
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 1000
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.updatedAt is timestamp
         && isValidStatus(request.resource.data.status)
         && request.resource.data.status == 'Submitted'
         && isValidCategory(request.resource.data.category)
@@ -288,7 +305,7 @@ service cloud.firestore {
           && request.resource.data.description is string
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.authorName is string
-          && request.resource.data.createdAt == request.time
+          && request.resource.data.createdAt is timestamp
           && ((isManagement() && request.resource.data.authorRole == 'management')
             || (isResident()
               && get(/databases/$(database)/documents/complaints/$(complaintId)).data.residentId == request.auth.uid

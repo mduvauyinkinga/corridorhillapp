@@ -14,7 +14,7 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-storage.js";
 
 /** Allowed image MIME types. */
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
