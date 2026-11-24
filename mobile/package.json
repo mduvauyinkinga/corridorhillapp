@@ -25,14 +25,14 @@
     "expo-image-picker": "~57.0.22",
     "expo-status-bar": "~57.0.1",
     "firebase": "10.12.2",
-    "react": "19.1.0",
-    "react-native": "0.79.0",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
     "react-native-get-random-values": "~1.11.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0"
   },
   "devDependencies": {
-    "@types/react": "^19.1.0",
+    "@types/react": "~19.2.4",
     "babel-preset-expo": "^57.0.12"
   }
 }
