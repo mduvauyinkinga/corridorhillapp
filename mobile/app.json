@@ -13,7 +13,8 @@
     "android": {
       "package": "za.ac.tut.corridormaintenance",
       "permissions": [
-        "android.permission.INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "ios": {
@@ -30,7 +31,10 @@
       "expo-font"
     ],
     "extra": {
-      "firebaseProjectId": "corridormaintenanceapp"
+      "firebaseProjectId": "corridormaintenanceapp",
+      "eas": {
+        "projectId": "51f71dcf-f535-4019-a6b5-3bceda408399"
+      }
     }
   }
 }
